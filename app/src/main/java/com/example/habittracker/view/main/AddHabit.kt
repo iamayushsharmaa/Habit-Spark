@@ -22,12 +22,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -49,7 +56,9 @@ import com.example.habittracker.Res
 import com.example.habittracker.Res.icons
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
+import kotlin.math.exp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddHabit() {
 
@@ -221,46 +230,54 @@ fun AddHabit() {
         )
         TextForm(text = "Interval")
 
-        OutlinedTextField(
-            value = selectedOption,
-            onValueChange = { },
-            readOnly = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = true }
-                .padding(start = 15.dp, end = 15.dp, top = 6.dp),
-            shape = RoundedCornerShape(18.dp),
-
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = AppColor.Black,
-                unfocusedTextColor = AppColor.Black,
-                focusedContainerColor = AppColor.WhiteFade,
-                unfocusedContainerColor = AppColor.WhiteFade,
-                focusedIndicatorColor = AppColor.Blue,
-                unfocusedIndicatorColor = AppColor.WhiteFade,
-                focusedLabelColor = AppColor.BlackFade,
-                unfocusedLabelColor = AppColor.BlackFade,
-            )
-        )
-        DropdownMenu(
+        ExposedDropdownMenuBox(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
+            onExpandedChange = { expanded = it }
         ) {
-            intervals.forEach { option ->
-                DropdownMenuItem(
-                    onClick = {
-                        selectedOption = option
-                        expanded = false
-                    },
-                    text = {
-                        Text(
-                            text = option,
-                            fontSize = 18.sp,
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.Normal
-                        ) }
+            OutlinedTextField(
+                value = selectedOption,
+                onValueChange = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, end = 15.dp)
+                    .menuAnchor()
+                    .clickable { expanded = !expanded },
+                readOnly = true,
+                shape = RoundedCornerShape(18.dp),
+                trailingIcon = {
+                    Icon(
+                        imageVector = if( expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = AppColor.Black,
+                    unfocusedTextColor = AppColor.Black,
+                    focusedContainerColor = AppColor.WhiteFade,
+                    unfocusedContainerColor = AppColor.WhiteFade,
+                    focusedIndicatorColor = AppColor.Blue,
+                    unfocusedIndicatorColor = AppColor.WhiteFade,
+                    focusedLabelColor = AppColor.BlackFade,
+                    unfocusedLabelColor = AppColor.BlackFade,
                 )
+            )
+
+            // Dropdown Menu
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                intervals.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        onClick = {
+                            selectedOption = option
+                            expanded = false
+                        },
+                        modifier = Modifier
+                            .background(color = AppColor.WhiteFade),
+                    )
+                }
             }
         }
 
