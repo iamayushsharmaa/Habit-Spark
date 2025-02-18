@@ -114,7 +114,7 @@ fun AddHabit() {
         OutlinedTextField(
             value = habitName,
             onValueChange = { habitName = it },
-            label = {
+            placeholder = {
                 Text(
                     "Type habit name",
                     fontSize = 18.sp,
@@ -145,7 +145,7 @@ fun AddHabit() {
         OutlinedTextField(
             value = description,
             onValueChange = { description = it },
-            label = {
+            placeholder = {
                 Text(
                     "Describe a habit",
                     fontSize = 18.sp,
@@ -175,7 +175,7 @@ fun AddHabit() {
         OutlinedTextField(
             value = value,
             onValueChange = { value = it},
-            label = {
+            placeholder = {
                 Text(
                     text = "Enter a Value",
                     fontSize = 18.sp,
@@ -204,7 +204,7 @@ fun AddHabit() {
         OutlinedTextField(
             value = unit,
             onValueChange = { unit = it},
-            label = {
+            placeholder = {
                 Text(
                     text = "Enter a unit",
                     fontSize = 18.sp,
@@ -347,7 +347,7 @@ fun TextForm(text: String) {
     Text(
         text = text,
         color = AppColor.BlackFade,
-        fontSize = 15.sp,
+        fontSize = 13.sp,
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Normal,
         modifier = Modifier
