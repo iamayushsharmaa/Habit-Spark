@@ -47,7 +47,7 @@ import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.google.android.play.integrity.internal.f
 
 @Composable
-fun HabitStyle(allHabits: HabitData) {
+fun HabitStyle() {
 
     var checkedState by remember { mutableStateOf(false) }
 
@@ -101,7 +101,7 @@ fun HabitStyle(allHabits: HabitData) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
                     Text(
-                        text = allHabits.habitName,
+                        text = "allHabits.habitName",
                         fontSize = 18.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Normal,
@@ -132,10 +132,4 @@ fun HabitStyle(allHabits: HabitData) {
             }
         }
     }
-}
-
-@Composable
-@Preview
-fun MainPreview(){
-
 }
