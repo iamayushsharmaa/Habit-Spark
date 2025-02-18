@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -103,7 +104,7 @@ fun AddHabit() {
             Text(
                 text = "Let's Start a new Habit",
                 color = AppColor.Black,
-                fontSize = 26.sp,
+                fontSize = 24.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold,
             )
@@ -117,7 +118,7 @@ fun AddHabit() {
             placeholder = {
                 Text(
                     "Type habit name",
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal
             ) },
@@ -127,6 +128,12 @@ fun AddHabit() {
             shape = RoundedCornerShape(18.dp),
             maxLines = 1,
             singleLine = true,
+            textStyle = TextStyle(
+                fontSize = 16.sp,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.Normal,
+                color = AppColor.Black
+            ),
             colors = TextFieldDefaults.colors(
                 focusedTextColor = AppColor.Black,
                 unfocusedTextColor = AppColor.Black,
@@ -148,7 +155,7 @@ fun AddHabit() {
             placeholder = {
                 Text(
                     "Describe a habit",
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal
                 ) },
@@ -158,6 +165,12 @@ fun AddHabit() {
             shape = RoundedCornerShape(18.dp),
             maxLines = 1,
             singleLine = true,
+            textStyle = TextStyle(
+                fontSize = 16.sp,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.Normal,
+                color = AppColor.Black
+            ),
             colors = TextFieldDefaults.colors(
                 focusedTextColor = AppColor.Black,
                 unfocusedTextColor = AppColor.Black,
@@ -178,7 +191,7 @@ fun AddHabit() {
             placeholder = {
                 Text(
                     text = "Enter a Value",
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal
             ) },
@@ -187,7 +200,12 @@ fun AddHabit() {
                 .fillMaxWidth()
                 .padding(start = 15.dp, end = 15.dp),
             shape = RoundedCornerShape(18.dp),
-
+            textStyle = TextStyle(
+                fontSize = 16.sp,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.Normal,
+                color = AppColor.Black
+            ),
             colors = TextFieldDefaults.colors(
                 focusedTextColor = AppColor.Black,
                 unfocusedTextColor = AppColor.Black,
@@ -207,10 +225,16 @@ fun AddHabit() {
             placeholder = {
                 Text(
                     text = "Enter a unit",
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal
                 ) },
+            textStyle = TextStyle(
+                fontSize = 16.sp,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.Normal,
+                color = AppColor.Black
+            ),
             maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -244,6 +268,12 @@ fun AddHabit() {
                     .clickable { expanded = !expanded },
                 readOnly = true,
                 shape = RoundedCornerShape(18.dp),
+                textStyle = TextStyle(
+                    fontSize = 16.sp,
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    color = AppColor.Black
+                ),
                 trailingIcon = {
                     Icon(
                         imageVector = if( expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -262,14 +292,20 @@ fun AddHabit() {
                 )
             )
 
-            // Dropdown Menu
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
                 intervals.forEach { option ->
                     DropdownMenuItem(
-                        text = { Text(option) },
+                        text = {
+                            Text(
+                                text = option,
+                                fontSize = 16.sp,
+                                fontFamily = poppinsFontFamily,
+                                fontWeight = FontWeight.Normal,
+                                color = AppColor.Black
+                            ) },
                         onClick = {
                             selectedOption = option
                             expanded = false
