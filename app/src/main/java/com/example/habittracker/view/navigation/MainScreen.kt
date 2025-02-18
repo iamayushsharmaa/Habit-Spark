@@ -18,7 +18,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.habittracker.data.BottomNavItem
 import com.example.habittracker.data.auth.GoogleAuthUiClient
 import com.example.habittracker.view.main.AddHabit
 import com.example.habittracker.view.main.BottomNavBar

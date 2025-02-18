@@ -42,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.habittracker.R
-import com.example.habittracker.data.HabitData
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.google.android.play.integrity.internal.f

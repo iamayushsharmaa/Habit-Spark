@@ -14,7 +14,6 @@ import com.example.habittracker.data.auth.GoogleAuthUiClient
 import com.example.habittracker.view.auth.LoginScreen
 import com.example.habittracker.view.auth.SignUpScreen
 import com.example.habittracker.viewModel.AuthViewModel
-import com.example.habittracker.viewModel.FirestoreViewModel
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore

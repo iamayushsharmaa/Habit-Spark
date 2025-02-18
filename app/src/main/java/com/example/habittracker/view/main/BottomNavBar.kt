@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.habittracker.data.BottomNavItem
+import com.example.habittracker.view.navigation.BottomNavItem
 
 @Composable
 fun BottomNavBar(navController: NavHostController) {

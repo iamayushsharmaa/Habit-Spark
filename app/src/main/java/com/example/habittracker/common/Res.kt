@@ -1,4 +1,6 @@
-package com.example.habittracker
+package com.example.habittracker.common
+
+import com.example.habittracker.R
 
 object Res{
     val icons = listOf(
