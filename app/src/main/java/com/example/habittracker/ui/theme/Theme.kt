@@ -9,24 +9,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFFFFFFFF),
+    primary = AppColor.Black,
     onPrimary = Color.White,
-    secondary = Color(0xFFe6e6e6 ),
-    onSecondary = Color.Black,
-    background = Color(0xFFFFFFFF),
-    surface = Color(0xFFFFFFFF),
-
+    secondary = AppColor.WhiteFade,
+    background = AppColor.White,
+    surface = AppColor.White,
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFFFFFFFF),
+    primary = AppColor.White,
     onPrimary = Color.White,
-    secondary = Color(0xFF191919),
-    onSecondary = Color(0xFF191919),
-    background = Color(0xFF000000),
-    surface = Color(0xFF000000),
+    secondary = AppColor.BlackFade,
+    background = AppColor.Black,
+    surface = AppColor.Black,
 )
-
 
 @Composable
 fun HabitTheme(

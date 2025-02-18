@@ -1,5 +1,7 @@
 package com.example.habittracker.viewModel
 
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habittracker.repository.FirestoreRepository.FirestoreRepository
@@ -25,15 +27,23 @@ class FirestoreViewModel @Inject constructor(
     fun addHabits(habitData: HabitData){
         viewModelScope.launch {
             repository.addDataToFirestore(habitData)
+            Log.d("addindb", "addHabits: habit added")
+            getHabitData()
         }
     }
 
-    fun getHabitData(habitData: HabitData){
+    fun getHabitData() {
         viewModelScope.launch {
             _loading.value = true
-            val habitsDataVM = repository.getDataFromFirestore()
-            _habitsData.value  = habitsDataVM
-            _loading.value = false
+            try {
+                val habitsDataVM = repository.getDataFromFirestore()
+                _habitsData.value = habitsDataVM
+            } catch (e: Exception) {
+               Log.e("FirestoreViewModel", "Error fetching habits: ${e.message}")
+                _habitsData.value = emptyList()
+            } finally {
+                _loading.value = false
+            }
         }
     }
 }

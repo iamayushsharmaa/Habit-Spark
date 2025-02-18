@@ -1,5 +1,6 @@
 package com.example.habittracker.view.main
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -8,16 +9,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.habittracker.data.BottomNavItem
 
 @Composable
-fun BottomNavBar(navController: NavHostController,modifier: Modifier) {
+fun BottomNavBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem.Home,
-        BottomNavItem.Analytic,
+        BottomNavItem.AddHabit,
         BottomNavItem.Profile
     )
 
@@ -31,6 +33,7 @@ fun BottomNavBar(navController: NavHostController,modifier: Modifier) {
             BottomNavigationItem(
                 icon = { Icon(item.icon, contentDescription = item.label) },
                 label = { Text(item.label) },
+                modifier = Modifier.padding(bottom = 16.dp),
                 selected = currentRoute == item.route,
                 onClick = {
                     navController.navigate(item.route) {

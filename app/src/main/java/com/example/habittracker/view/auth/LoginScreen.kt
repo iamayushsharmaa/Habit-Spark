@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.Button
@@ -33,35 +36,65 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.habittracker.R
 import com.example.habittracker.data.SigninState
-import com.example.habittracker.viewModel.SignInViewModel
+import com.example.habittracker.data.auth.AuthResult
+import com.example.habittracker.viewModel.AuthViewModel
+import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    mAuth: FirebaseAuth,
-    signInViewModel: SignInViewModel,
-    state: SigninState,
-    applicationContext: Context,
+    viewModel: AuthViewModel = hiltViewModel(),
     navController: NavController,
-    onGoogleSignClick: () -> Unit,
 ) {
 
-    var email by remember{ mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val state = viewModel.state
+    val context = LocalContext.current
+
+    LaunchedEffect (viewModel, context){
+        viewModel.authResult.collect{ result ->
+            when(result){
+                is AuthResult.Authorized -> {
+                    navController.navigate("main_screen"){
+                        popUpTo("signin"){
+                            inclusive = true
+                        }
+                    }
+                }
+                is AuthResult.Unauthorized -> {
+                    Toast.makeText(context, "You are not authorized", Toast.LENGTH_SHORT).show()
+
+                }
+                is AuthResult.UnknownError -> {
+                    Toast.makeText(context, "An Unknown error occurred", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+    val focusRequester = remember{
+        FocusRequester()
+    }
+    val focusManager = LocalFocusManager.current
 
     Scaffold(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -88,31 +121,41 @@ fun LoginScreen(
                 fontWeight = FontWeight.Normal,
             )
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text(text = "Email",color = Color.Black) },
+                value = state.signinUsername,
+                onValueChange = {
+                    viewModel.onEvent(AuthUiEvent.SignInUsernameChanged(it))
+                },
+                label = { Text(text = "Username",color = Color.Black) },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .focusRequester(focusRequester)
                     .padding(top = 15.dp, start = 20.dp, end = 20.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.DarkGray,
-                    unfocusedBorderColor = Color.DarkGray,
-                    cursorColor = Color.DarkGray,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    }
                 )
             )
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = state.signinPassword,
+                onValueChange = {
+                    viewModel.onEvent(AuthUiEvent.SignInPasswordChanged(it))
+                },
                 label = { Text(text = "Password", color = Color.Black)},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp, start = 20.dp, end = 20.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.DarkGray,
-                    unfocusedBorderColor = Color.DarkGray,
-                    cursorColor = Color.DarkGray,
-
-                    )
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    }
+                )
             )
             Row(
                 modifier = Modifier
@@ -124,7 +167,9 @@ fun LoginScreen(
 
             }
             Button(
-                onClick = {  },
+                onClick = {
+                    viewModel.onEvent(AuthUiEvent.SignIn)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(62.dp)
@@ -139,20 +184,20 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = "or with",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 150.dp)
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-
-            SignInGoogle(state = state,onGoogleSignClick)
-
-            SignInFacbook {
-
-            }
+//            Text(
+//                text = "or with",
+//                textAlign = TextAlign.Center,
+//                modifier = Modifier.padding(horizontal = 150.dp)
+//            )
+//
+//            Spacer(modifier = Modifier.height(20.dp))
+//
+//
+//           // SignInGoogle(state = state,onGoogleSignClick)
+//
+//            SignInFacbook {
+//
+//            }
 
             val annotatedText = buildAnnotatedString {
                 append("Don't have an account? ")
@@ -175,7 +220,7 @@ fun LoginScreen(
                     onClick = { offset ->
                         annotatedText.getStringAnnotations(tag = "SIGN_UP", start = offset, end = offset)
                             .firstOrNull()?.let {
-                                navController.navigate("signUp")
+                                navController.navigate("signup")
                             }
                     }
                 )
