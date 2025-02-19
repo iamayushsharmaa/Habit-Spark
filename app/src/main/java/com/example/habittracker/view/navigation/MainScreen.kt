@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFontFamilyResolver
@@ -18,19 +17,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.habittracker.data.auth.GoogleAuthUiClient
 import com.example.habittracker.view.main.AddHabit
 import com.example.habittracker.view.main.BottomNavBar
-import com.example.habittracker.view.main.HomeScreen
-import com.example.habittracker.view.main.ProfileScreen
+import com.example.habittracker.view.main.Home
+import com.example.habittracker.view.main.Profile
 import kotlinx.coroutines.CoroutineExceptionHandler
+import java.time.LocalDate
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(
-    googleAuthUiClient: GoogleAuthUiClient
-) {
+fun MainScreen() {
     val handler = CoroutineExceptionHandler { _, throwable ->
         Log.e("TAG", "There has been an issue: ", throwable)
     }
@@ -47,7 +44,6 @@ fun MainScreen(
         ) {  innerPadding->
             NavigationGraph(
                 navController,
-                googleAuthUiClient,
                 innerPadding
             )
         }
@@ -57,29 +53,23 @@ fun MainScreen(
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    googleAuthUiClient: GoogleAuthUiClient,
     innerPadding: PaddingValues,
 ) {
     NavHost(navController, startDestination = BottomNavItem.Home.route, modifier = Modifier.padding(innerPadding)) {
         composable(BottomNavItem.Home.route) {
-            HomeScreen(navController, )
+            Home(
+                userId = "",
+                date = LocalDate.now()
+            )
         }
         composable(BottomNavItem.AddHabit.route){
             AddHabit()
         }
 
         composable(BottomNavItem.Profile.route) {
-            ProfileScreen(
+            Profile(
                 navController,
-                userData = googleAuthUiClient.getSignedInUser(),
-                onSignOut = {
-                    LaunchedEffect(Unit) {
-                        googleAuthUiClient.signOut()
-                        navController.navigate("login_screen") {
-                            popUpTo(0)
-                        }
-                    }
-                },
+                onSignOut = { },
 
             )
         }

@@ -7,16 +7,16 @@ import com.example.habittracker.data.auth.AuthApi
 import com.example.habittracker.data.auth.AuthRepository
 import com.example.habittracker.data.auth.AuthRepositoryImpl
 import com.example.habittracker.data.calander.CalendarRepository
-import com.example.habittracker.repository.FirestoreRepository.FirestoreRepository
-import com.example.habittracker.repository.FirestoreRepository.FirestoreRepositoryImpl
+import com.example.habittracker.data.remote.HabitApi
+import com.example.habittracker.data.remote.HabitsRepository
+import com.example.habittracker.data.remote.HabitsRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 
@@ -26,12 +26,23 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideRetorfit(): AuthApi {
+    fun provideRetorfit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl("http://192.168.1.3:8080/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(AuthApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthApi(retrofit: Retrofit): AuthApi {
+        return retrofit.create(AuthApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHabitApi(retrofit: Retrofit): HabitApi {
+        return retrofit.create(HabitApi::class.java)
     }
 
     @Provides
@@ -48,8 +59,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideFirestoreRepository(): FirestoreRepository {
-        return FirestoreRepositoryImpl()
+    fun provideHabitRepository(habitApi: HabitApi): HabitsRepository {
+        return HabitsRepositoryImpl(habitApi)
     }
 
     @Provides

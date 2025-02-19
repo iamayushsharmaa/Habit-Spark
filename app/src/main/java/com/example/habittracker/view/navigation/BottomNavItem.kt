@@ -5,9 +5,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.habittracker.common.Res
 
-sealed class BottomNavItem(val label: String, val icon: ImageVector, val route: String) {
-    object Home : BottomNavItem("Home", Icons.Filled.Home, "home")
-    object AddHabit : BottomNavItem("Add", Icons.Filled.Add, "add_habit")
-    object Profile : BottomNavItem("Profile", Icons.Filled.Settings, "profile")
+sealed class BottomNavItem(val iconBlank: Int, val iconFilled: Int, val route: String) {
+
+    object Home : BottomNavItem( Res.houseIconBlank, Res.houseIconFilled , "home")
+    object AddHabit : BottomNavItem( Res.addIconBlank, Res.addIconFilled, "add_habit")
+    object Profile : BottomNavItem( Res.profileIconBlank, Res.profileIconFilled, "profile")
 }

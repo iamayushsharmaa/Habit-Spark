@@ -1,12 +1,18 @@
 package com.example.habittracker.data.remote.response
 
-data class HabitResponse (
+import com.example.habittracker.data.remote.request.Frequency
+import java.time.LocalDate
+
+data class HabitResponse(
+    val habitId: String,
     val userId: String,
     val name: String,
-    val description: String,
-    val icon : String,
+    val icon: String,
     val iconBackground: String,
-    val startDate: Long,
-    val goal: Goal,
-    val completed: Boolean = false
+    val description: String,
+    val frequency: Frequency,
+    val startDate: LocalDate,
+    val isActive: Boolean,
+    val isLocked: Boolean,
+    val isCompleted: Boolean
 )

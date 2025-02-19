@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -46,6 +47,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.habittracker.common.Res
 import com.example.habittracker.common.Res.icons
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
@@ -64,17 +66,9 @@ fun AddHabit() {
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(intervals[0]) }
 
-    val colors = listOf(
-        AppColor.Yellow,
-        AppColor.SkyBlue,
-        AppColor.Blue,
-        AppColor.Cyan,
-        AppColor.Green,
-        AppColor.Orange,
-        AppColor.Purple,
-        AppColor.Black
-    )
-    var selectedColor by remember { mutableStateOf(colors[0]) }
+
+
+    var selectedColor by remember { mutableStateOf(Res.colorList[0]) }
     var selectedIcon by remember { mutableStateOf<Int?>(icons[0]) }
     var isIconSelected by remember { mutableStateOf(false) }
 
@@ -334,7 +328,7 @@ fun AddHabit() {
                 .padding(horizontal = 15.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ){
-            items(colors){ color->
+            items(Res.colorList){ color->
                 PickColor(
                     color = color,
                     isSelected = color == selectedColor,

@@ -10,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.habittracker.ui.theme.HabitTheme
-import com.example.habittracker.data.auth.GoogleAuthUiClient
 import com.example.habittracker.view.auth.LoginScreen
 import com.example.habittracker.view.auth.SignUpScreen
 import com.example.habittracker.viewModel.AuthViewModel
@@ -24,12 +23,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private  val googleAuthUiClient by lazy {
-        GoogleAuthUiClient(
-            context = applicationContext,
-            oneTapClient = Identity.getSignInClient(applicationContext)
-        )
-    }
+
     private lateinit var mAuth : FirebaseAuth
     val db= Firebase.firestore
 
@@ -41,7 +35,6 @@ class MainActivity : ComponentActivity() {
             HabitTheme {
                 val navController = rememberNavController()
                 val SignInViewModel = viewModel<AuthViewModel>()
-                val firestoreViewModel: FirestoreViewModel by viewModels()
                 val isUserSignedIn = mAuth.currentUser != null
 
                 NavHost(
@@ -49,31 +42,6 @@ class MainActivity : ComponentActivity() {
                     startDestination = "main_screen"
                 ) {
                     composable("signin") {
-//                        val launcher = rememberLauncherForActivityResult(
-//                            contract = ActivityResultContracts.StartIntentSenderForResult(),
-//                            onResult = { result ->
-//                                if (result.resultCode == RESULT_OK) {
-//                                    lifecycleScope.launch {
-//                                        val signInResult =
-//                                            googleAuthUiClient.SignInWithIntent(
-//                                                intent = result.data ?: return@launch
-//                                            )
-//                                       // SignInViewModel.onSignInResult(signInResult)
-//                                    }
-//                                }
-//                            }
-//                        )
-//                        LaunchedEffect(key1 = state.isSignInSuccesful) {
-//                            if (state.isSignInSuccesful) {
-//                                Toast.makeText(
-//                                    applicationContext,
-//                                    "Sign in successfully",
-//                                    Toast.LENGTH_LONG
-//                                ).show()
-//                                navController.navigate("main_screen")
-//                                SignInViewModel.resetState()
-//                            }
-//                        }
                         LoginScreen(
                             navController = navController,
                         )
@@ -84,7 +52,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("main_screen") {
-                        MainScreen(googleAuthUiClient)
+                        MainScreen()
                     }
                 }
             }

@@ -55,11 +55,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.habittracker.R
-import com.example.habittracker.data.SigninState
 import com.example.habittracker.data.auth.AuthResult
 import com.example.habittracker.viewModel.AuthViewModel
-import com.google.android.gms.auth.api.Auth
-import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,21 +181,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-//            Text(
-//                text = "or with",
-//                textAlign = TextAlign.Center,
-//                modifier = Modifier.padding(horizontal = 150.dp)
-//            )
-//
-//            Spacer(modifier = Modifier.height(20.dp))
-//
-//
-//           // SignInGoogle(state = state,onGoogleSignClick)
-//
-//            SignInFacbook {
-//
-//            }
-
             val annotatedText = buildAnnotatedString {
                 append("Don't have an account? ")
 
@@ -232,65 +214,3 @@ fun LoginScreen(
     }
 
 }
-
-@Composable
-fun SignInGoogle(
-    state: SigninState,
-    onGoogleSignClick: () -> Unit
-){
-
-    val context = LocalContext.current
-    LaunchedEffect(key1 = state.signInError) {
-        state.signInError?.let{ error ->
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-
-        }
-    }
-    Button(onClick = onGoogleSignClick,
-        modifier = Modifier
-            .height(58.dp)
-            .fillMaxWidth()
-            .padding(top = 10.dp, start = 5.dp, end = 5.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Black,
-            contentColor = Color.White
-        )
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.googlesvg),
-            contentDescription = "Google Sign-In",
-            tint = Color.Unspecified
-        )
-        Spacer(modifier = Modifier.width(20.dp))
-        Text(text = "Sign in with Google")
-    }
-}
-
-@Composable
-fun SignInFacbook(onClick:() -> Unit){
-
-    Button(onClick = onClick,
-        modifier = Modifier
-            .height(58.dp)
-            .fillMaxWidth()
-            .padding(top = 10.dp, start = 5.dp, end = 5.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Black,
-            contentColor = Color.White
-        )
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.icons_fb),
-            contentDescription = "Facebook Sign-In",
-            tint = Color.Unspecified
-        )
-        Spacer(modifier = Modifier.width(20.dp))
-        Text(text = "Sign in with Facebook")
-    }
-}
-
-//@Preview
-//@Composable
-//fun LoginPre(){
-//    LoginScreen(viewModel = viewModel(), state = SigninState(), onGoogleSignClick,applicationContext = LocalContext.current, navController = rememberNavController())
-//}
