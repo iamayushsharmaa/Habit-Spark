@@ -27,51 +27,37 @@ import java.time.LocalDate
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(outerNavController: NavHostController) {
+    val innerNavController = rememberNavController()
+
     val handler = CoroutineExceptionHandler { _, throwable ->
         Log.e("TAG", "There has been an issue: ", throwable)
     }
-
-    val navController = rememberNavController()
 
     CompositionLocalProvider(
         LocalFontFamilyResolver provides createFontFamilyResolver(LocalContext.current, handler)
     ) {
         Scaffold(
             bottomBar = {
-                BottomNavBar(navController = navController) // Remove manual padding here
+                BottomNavBar(navController = innerNavController)
             }
         ) {  innerPadding->
-            NavigationGraph(
-                navController,
-                innerPadding
-            )
+            NavHost(
+                navController = innerNavController,
+                startDestination = BottomNavItem.Home.route,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(BottomNavItem.Home.route) {
+                    Home(userId = "", date = LocalDate.now())
+                }
+                composable(BottomNavItem.AddHabit.route) {
+                    AddHabit()
+                }
+                composable(BottomNavItem.Profile.route) {
+                    Profile(navController = outerNavController)
+                }
+            }
         }
     }
 }
 
-@Composable
-fun NavigationGraph(
-    navController: NavHostController,
-    innerPadding: PaddingValues,
-) {
-    NavHost(navController, startDestination = BottomNavItem.Home.route, modifier = Modifier.padding(innerPadding)) {
-        composable(BottomNavItem.Home.route) {
-            Home(
-                userId = "",
-                date = LocalDate.now()
-            )
-        }
-        composable(BottomNavItem.AddHabit.route){
-            AddHabit()
-        }
-
-        composable(BottomNavItem.Profile.route) {
-            Profile(
-                navController,
-                onSignOut = { },
-
-            )
-        }
-    }
-}

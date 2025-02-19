@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,6 +13,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.habittracker.ui.theme.HabitTheme
 import com.example.habittracker.view.auth.LoginScreen
 import com.example.habittracker.view.auth.SignUpScreen
+import com.example.habittracker.view.main.AddHabit
+import com.example.habittracker.view.main.Home
+import com.example.habittracker.view.main.Profile
+import com.example.habittracker.view.main.UpdatePassword
 import com.example.habittracker.viewModel.AuthViewModel
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +24,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -52,7 +58,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("main_screen") {
-                        MainScreen()
+                        MainScreen(navController)
+                    }
+
+                    composable("update_password") {
+                        UpdatePassword(navController = navController)
                     }
                 }
             }

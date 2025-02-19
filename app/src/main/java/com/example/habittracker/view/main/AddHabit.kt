@@ -77,6 +77,7 @@ fun AddHabit() {
             .fillMaxSize()
             .background(color = AppColor.White)
             .statusBarsPadding()
+            .padding(8.dp)
             .verticalScroll(rememberScrollState()),
     ){
         Row (
