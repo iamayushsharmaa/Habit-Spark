@@ -75,8 +75,8 @@ fun AddHabit(
     val context = LocalContext.current
     var habitName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-//    var unit by remember { mutableStateOf("") }
-//    var value by remember { mutableStateOf("") }
+    var unit by remember { mutableStateOf("") }
+    var value by remember { mutableStateOf("") }
 
     val frequency = Frequency.values()
     var expanded by remember { mutableStateOf(false) }
@@ -182,74 +182,74 @@ fun AddHabit(
             )
         )
 
-//        TextForm(text = "Value")
-//        OutlinedTextField(
-//            value = value,
-//            onValueChange = { value = it},
-//            placeholder = {
-//                Text(
-//                    text = "Enter a Value",
-//                    fontSize = 16.sp,
-//                    fontFamily = poppinsFontFamily,
-//                    fontWeight = FontWeight.Normal
-//            ) },
-//            maxLines = 1,
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(start = 15.dp, end = 15.dp),
-//            shape = RoundedCornerShape(18.dp),
-//            textStyle = TextStyle(
-//                fontSize = 16.sp,
-//                fontFamily = poppinsFontFamily,
-//                fontWeight = FontWeight.Normal,
-//                color = AppColor.Black
-//            ),
-//            colors = TextFieldDefaults.colors(
-//                focusedTextColor = AppColor.Black,
-//                unfocusedTextColor = AppColor.Black,
-//                focusedContainerColor = AppColor.WhiteFade,
-//                unfocusedContainerColor = AppColor.WhiteFade,
-//                focusedIndicatorColor = AppColor.Blue,
-//                unfocusedIndicatorColor = AppColor.WhiteFade,
-//                focusedLabelColor = AppColor.BlackFade,
-//                unfocusedLabelColor = AppColor.BlackFade,
-//            )
-//        )
-//        TextForm(text = "Unit")
-//
-//        OutlinedTextField(
-//            value = unit,
-//            onValueChange = { unit = it},
-//            placeholder = {
-//                Text(
-//                    text = "Enter a unit",
-//                    fontSize = 16.sp,
-//                    fontFamily = poppinsFontFamily,
-//                    fontWeight = FontWeight.Normal
-//                ) },
-//            textStyle = TextStyle(
-//                fontSize = 16.sp,
-//                fontFamily = poppinsFontFamily,
-//                fontWeight = FontWeight.Normal,
-//                color = AppColor.Black
-//            ),
-//            maxLines = 1,
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(start = 15.dp, end = 15.dp),
-//            shape = RoundedCornerShape(18.dp),
-//
-//            colors = TextFieldDefaults.colors(
-//                focusedTextColor = AppColor.Black,
-//                unfocusedTextColor = AppColor.Black,
-//                focusedContainerColor = AppColor.WhiteFade,
-//                unfocusedContainerColor = AppColor.WhiteFade,
-//                focusedIndicatorColor = AppColor.Blue,
-//                unfocusedIndicatorColor = AppColor.WhiteFade,
-//                focusedLabelColor = AppColor.BlackFade,
-//                unfocusedLabelColor = AppColor.BlackFade,
-//            )
-//        )
+        TextForm(text = "Value")
+        OutlinedTextField(
+            value = value,
+            onValueChange = { value = it},
+            placeholder = {
+                Text(
+                    text = "Enter a Value",
+                    fontSize = 16.sp,
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Normal
+            ) },
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp, end = 15.dp),
+            shape = RoundedCornerShape(18.dp),
+            textStyle = TextStyle(
+                fontSize = 16.sp,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.Normal,
+                color = AppColor.Black
+            ),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = AppColor.Black,
+                unfocusedTextColor = AppColor.Black,
+                focusedContainerColor = AppColor.WhiteFade,
+                unfocusedContainerColor = AppColor.WhiteFade,
+                focusedIndicatorColor = AppColor.Blue,
+                unfocusedIndicatorColor = AppColor.WhiteFade,
+                focusedLabelColor = AppColor.BlackFade,
+                unfocusedLabelColor = AppColor.BlackFade,
+            )
+        )
+        TextForm(text = "Unit")
+
+        OutlinedTextField(
+            value = unit,
+            onValueChange = { unit = it},
+            placeholder = {
+                Text(
+                    text = "Enter a unit",
+                    fontSize = 16.sp,
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Normal
+                ) },
+            textStyle = TextStyle(
+                fontSize = 16.sp,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.Normal,
+                color = AppColor.Black
+            ),
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp, end = 15.dp),
+            shape = RoundedCornerShape(18.dp),
+
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = AppColor.Black,
+                unfocusedTextColor = AppColor.Black,
+                focusedContainerColor = AppColor.WhiteFade,
+                unfocusedContainerColor = AppColor.WhiteFade,
+                focusedIndicatorColor = AppColor.Blue,
+                unfocusedIndicatorColor = AppColor.WhiteFade,
+                focusedLabelColor = AppColor.BlackFade,
+                unfocusedLabelColor = AppColor.BlackFade,
+            )
+        )
         TextForm(text = "Interval")
 
         ExposedDropdownMenuBox(
@@ -391,8 +391,8 @@ fun AddHabit(
                 .padding(horizontal = 15.dp, vertical = 5.dp),
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                contentColor = AppColor.Black,
-                containerColor = AppColor.Blue
+                contentColor = AppColor.White,
+                containerColor = AppColor.Black
             )
         ) {
             Text(
