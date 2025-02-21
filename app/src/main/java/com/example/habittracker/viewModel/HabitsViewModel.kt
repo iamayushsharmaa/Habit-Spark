@@ -33,9 +33,24 @@ class HabitsViewModel @Inject constructor(
         }
     }
 
-    fun getHabitsByDate(userId: String, date: LocalDate) {
+    fun getHabitsByDate(date: LocalDate) {
         viewModelScope.launch {
-            habitsRepository.getHabitsByDate(userId, date)
+            habitsRepository.getHabitsByDate(date)
+                .map { resource ->
+                    when (resource) {
+                        is Resource.Loading -> UiState(isLoading = true)
+                        is Resource.Success -> UiState(data = resource.data)
+                        is Resource.Error -> UiState(errorMessage = resource.message)
+                    }
+                }
+                .collect { uiState ->
+                    _habitsUiState.value = uiState
+                }
+        }
+    }
+    fun refreshHabits() {
+        viewModelScope.launch {
+            habitsRepository.getHabitsByDate(LocalDate.now())
                 .map { resource ->
                     when (resource) {
                         is Resource.Loading -> UiState(isLoading = true)

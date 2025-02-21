@@ -1,5 +1,6 @@
 package com.example.habittracker.data.remote
 
+import android.content.SharedPreferences
 import android.util.Log
 import com.example.habittracker.data.remote.request.HabitCompletionRequest
 import com.example.habittracker.data.remote.request.HabitRequest
@@ -13,13 +14,15 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class HabitsRepositoryImpl @Inject constructor(
-    private val habitApi: HabitApi
+    private val habitApi: HabitApi,
+    private val sharedPrefs: SharedPreferences
 ): HabitsRepository {
 
     override suspend fun createHabit(habit: HabitRequest){
 
         try {
-            habitApi.createHabit(habit)
+            val token = sharedPrefs.getString("jwt", null) ?: throw Exception("User not authenticated")
+            habitApi.createHabit("Bearer $token",habit)
 
         } catch (e: HttpException) {
             Log.d("TAG", "createHabit: io error $e")
@@ -29,13 +32,13 @@ class HabitsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getHabitsByDate(
-        userId: String,
         date: LocalDate
     ): Flow<Resource<List<HabitResponse>>>  = flow{
 
         emit(Resource.Loading)
         try {
-            val habits = habitApi.getHabitsByDate(userId, date)
+            val token = sharedPrefs.getString("jwt", null) ?: throw Exception("User not authenticated")
+            val habits = habitApi.getHabitsByDate("Bearer $token", date)
             emit(Resource.Success(habits))
         } catch (e: HttpException) {
             emit(Resource.Error("An unexpected error occurred: ${e.message}", e))

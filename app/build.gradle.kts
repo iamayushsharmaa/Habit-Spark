@@ -93,7 +93,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.kotlinx.coroutines.android)
-
+    implementation (libs.okhttp)
+    implementation (libs.logging.interceptor)
     implementation(libs.ktor.client.core)
     implementation (libs.ktor.client.android)
     implementation(libs.ktor.client.content.negotiation)

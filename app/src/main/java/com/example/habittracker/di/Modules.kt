@@ -14,9 +14,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -27,8 +30,18 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideRetorfit(): Retrofit {
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS) // Increase timeout to 30s
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY // Log requests/responses
+            })
+            .build()
+
         return Retrofit.Builder()
-            .baseUrl("http://192.168.1.3:8080/")
+            .baseUrl("http://10.0.2.2:8080/")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -59,8 +72,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideHabitRepository(habitApi: HabitApi): HabitsRepository {
-        return HabitsRepositoryImpl(habitApi)
+    fun provideHabitRepository(habitApi: HabitApi, sharedPrefs: SharedPreferences): HabitsRepository {
+        return HabitsRepositoryImpl(habitApi,sharedPrefs)
     }
 
     @Provides

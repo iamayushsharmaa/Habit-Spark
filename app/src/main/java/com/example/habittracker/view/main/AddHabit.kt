@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -47,30 +46,44 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.habittracker.common.Res
 import com.example.habittracker.common.Res.icons
+import com.example.habittracker.data.remote.request.Frequency
+import com.example.habittracker.data.remote.request.HabitRequest
+import com.example.habittracker.data.remote.request.toDisplayString
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
+import com.example.habittracker.view.navigation.BottomNavItem
+import com.example.habittracker.viewModel.AuthViewModel
+import com.example.habittracker.viewModel.HabitsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddHabit() {
+fun AddHabit(
+    habitsViewModel: HabitsViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel(),
+    navController: NavController
+) {
 
     val context = LocalContext.current
     var habitName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var unit by remember { mutableStateOf("") }
-    var value by remember { mutableStateOf("") }
+//    var unit by remember { mutableStateOf("") }
+//    var value by remember { mutableStateOf("") }
 
-    val intervals = listOf("Everyday", "Alternative")
+    val frequency = Frequency.values()
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(intervals[0]) }
-
-
+    var selectedFrequency by remember { mutableStateOf(Frequency.EVERYDAY) }
 
     var selectedColor by remember { mutableStateOf(Res.colorList[0]) }
     var selectedIcon by remember { mutableStateOf<Int?>(icons[0]) }
-    var isIconSelected by remember { mutableStateOf(false) }
 
     Column (
         modifier = Modifier
@@ -169,75 +182,74 @@ fun AddHabit() {
             )
         )
 
-        TextForm(text = "Value")
-       
-        OutlinedTextField(
-            value = value,
-            onValueChange = { value = it},
-            placeholder = {
-                Text(
-                    text = "Enter a Value",
-                    fontSize = 16.sp,
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.Normal
-            ) },
-            maxLines = 1,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 15.dp, end = 15.dp),
-            shape = RoundedCornerShape(18.dp),
-            textStyle = TextStyle(
-                fontSize = 16.sp,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Normal,
-                color = AppColor.Black
-            ),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = AppColor.Black,
-                unfocusedTextColor = AppColor.Black,
-                focusedContainerColor = AppColor.WhiteFade,
-                unfocusedContainerColor = AppColor.WhiteFade,
-                focusedIndicatorColor = AppColor.Blue,
-                unfocusedIndicatorColor = AppColor.WhiteFade,
-                focusedLabelColor = AppColor.BlackFade,
-                unfocusedLabelColor = AppColor.BlackFade,
-            )
-        )
-        TextForm(text = "Unit")
-
-        OutlinedTextField(
-            value = unit,
-            onValueChange = { unit = it},
-            placeholder = {
-                Text(
-                    text = "Enter a unit",
-                    fontSize = 16.sp,
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.Normal
-                ) },
-            textStyle = TextStyle(
-                fontSize = 16.sp,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Normal,
-                color = AppColor.Black
-            ),
-            maxLines = 1,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 15.dp, end = 15.dp),
-            shape = RoundedCornerShape(18.dp),
-
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = AppColor.Black,
-                unfocusedTextColor = AppColor.Black,
-                focusedContainerColor = AppColor.WhiteFade,
-                unfocusedContainerColor = AppColor.WhiteFade,
-                focusedIndicatorColor = AppColor.Blue,
-                unfocusedIndicatorColor = AppColor.WhiteFade,
-                focusedLabelColor = AppColor.BlackFade,
-                unfocusedLabelColor = AppColor.BlackFade,
-            )
-        )
+//        TextForm(text = "Value")
+//        OutlinedTextField(
+//            value = value,
+//            onValueChange = { value = it},
+//            placeholder = {
+//                Text(
+//                    text = "Enter a Value",
+//                    fontSize = 16.sp,
+//                    fontFamily = poppinsFontFamily,
+//                    fontWeight = FontWeight.Normal
+//            ) },
+//            maxLines = 1,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(start = 15.dp, end = 15.dp),
+//            shape = RoundedCornerShape(18.dp),
+//            textStyle = TextStyle(
+//                fontSize = 16.sp,
+//                fontFamily = poppinsFontFamily,
+//                fontWeight = FontWeight.Normal,
+//                color = AppColor.Black
+//            ),
+//            colors = TextFieldDefaults.colors(
+//                focusedTextColor = AppColor.Black,
+//                unfocusedTextColor = AppColor.Black,
+//                focusedContainerColor = AppColor.WhiteFade,
+//                unfocusedContainerColor = AppColor.WhiteFade,
+//                focusedIndicatorColor = AppColor.Blue,
+//                unfocusedIndicatorColor = AppColor.WhiteFade,
+//                focusedLabelColor = AppColor.BlackFade,
+//                unfocusedLabelColor = AppColor.BlackFade,
+//            )
+//        )
+//        TextForm(text = "Unit")
+//
+//        OutlinedTextField(
+//            value = unit,
+//            onValueChange = { unit = it},
+//            placeholder = {
+//                Text(
+//                    text = "Enter a unit",
+//                    fontSize = 16.sp,
+//                    fontFamily = poppinsFontFamily,
+//                    fontWeight = FontWeight.Normal
+//                ) },
+//            textStyle = TextStyle(
+//                fontSize = 16.sp,
+//                fontFamily = poppinsFontFamily,
+//                fontWeight = FontWeight.Normal,
+//                color = AppColor.Black
+//            ),
+//            maxLines = 1,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(start = 15.dp, end = 15.dp),
+//            shape = RoundedCornerShape(18.dp),
+//
+//            colors = TextFieldDefaults.colors(
+//                focusedTextColor = AppColor.Black,
+//                unfocusedTextColor = AppColor.Black,
+//                focusedContainerColor = AppColor.WhiteFade,
+//                unfocusedContainerColor = AppColor.WhiteFade,
+//                focusedIndicatorColor = AppColor.Blue,
+//                unfocusedIndicatorColor = AppColor.WhiteFade,
+//                focusedLabelColor = AppColor.BlackFade,
+//                unfocusedLabelColor = AppColor.BlackFade,
+//            )
+//        )
         TextForm(text = "Interval")
 
         ExposedDropdownMenuBox(
@@ -245,8 +257,8 @@ fun AddHabit() {
             onExpandedChange = { expanded = it }
         ) {
             OutlinedTextField(
-                value = selectedOption,
-                onValueChange = {},
+                value = selectedFrequency.toDisplayString(),
+                onValueChange = { selectedFrequency.toDisplayString()},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 15.dp, end = 15.dp)
@@ -280,20 +292,23 @@ fun AddHabit() {
 
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .background(AppColor.WhiteFade)
             ) {
-                intervals.forEach { option ->
+                frequency.forEach { option ->
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = option,
+                                text = option.toDisplayString(),
                                 fontSize = 16.sp,
                                 fontFamily = poppinsFontFamily,
                                 fontWeight = FontWeight.Normal,
                                 color = AppColor.Black
                             ) },
                         onClick = {
-                            selectedOption = option
+                            selectedFrequency = option
                             expanded = false
                         },
                         modifier = Modifier
@@ -341,8 +356,35 @@ fun AddHabit() {
         Spacer(Modifier.height(8.dp))
         Button(
             onClick = {
-                Toast.makeText(context, "Your habit is ready", Toast.LENGTH_SHORT).show()
-            } ,
+                val habitRequest = HabitRequest(
+                    habitId = UUID.randomUUID().toString(),
+                    name = habitName,
+                    icon = selectedIcon.toString(),
+                    iconBackground = selectedColor.toString(),
+                    description = description,
+                    frequency = selectedFrequency,
+                    startDate = LocalDate.now(),
+                    isActive = true
+                )
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    try {
+                        habitsViewModel.createHabit(habitRequest)
+                        Toast.makeText(context, "Your habit is ready to go!", Toast.LENGTH_SHORT).show()
+                        navController.navigate(BottomNavItem.Home.route){
+                            popUpTo(BottomNavItem.AddHabit.route){
+                                inclusive = true
+                            }
+                        }
+                        habitName = ""
+                        description = ""
+                        selectedIcon = null
+                        selectedColor = Res.colorList[0]
+                        selectedFrequency = Frequency.EVERYDAY
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Failed to create habit", Toast.LENGTH_SHORT).show()
+                    }
+                }            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(66.dp)

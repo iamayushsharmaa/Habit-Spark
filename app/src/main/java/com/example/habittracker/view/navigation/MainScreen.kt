@@ -48,10 +48,12 @@ fun MainScreen(outerNavController: NavHostController) {
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(BottomNavItem.Home.route) {
-                    Home(userId = "", date = LocalDate.now())
+                    Home()
                 }
                 composable(BottomNavItem.AddHabit.route) {
-                    AddHabit()
+                    AddHabit(
+                        navController = innerNavController
+                    )
                 }
                 composable(BottomNavItem.Profile.route) {
                     Profile(navController = outerNavController)

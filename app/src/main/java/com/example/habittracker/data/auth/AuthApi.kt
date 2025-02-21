@@ -21,5 +21,4 @@ interface AuthApi {
     suspend fun authenticate(
         @Header("Authorization") token: String
     )
-
 }

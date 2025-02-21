@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 interface HabitsRepository {
     suspend fun createHabit(habit: HabitRequest)
-    suspend fun getHabitsByDate(userId: String, date: LocalDate): Flow<Resource<List<HabitResponse>>>
+    suspend fun getHabitsByDate(date: LocalDate): Flow<Resource<List<HabitResponse>>>
     suspend fun updateHabit(habitId: String, habitCompletionRequest: HabitCompletionRequest)
     suspend fun deleteHabit(habitId: String)
 }

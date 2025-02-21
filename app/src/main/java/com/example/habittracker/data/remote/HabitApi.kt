@@ -6,6 +6,7 @@ import com.example.habittracker.data.remote.response.HabitResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -16,12 +17,13 @@ interface HabitApi {
 
     @POST("habits")
     suspend fun createHabit(
+        @Header("Authorization") token: String,
         @Body habit: HabitRequest
     )
 
     @GET("habits")
     suspend fun getHabitsByDate(
-        @Query("userId") userId: String,
+        @Header("Authorization") token: String,
         @Query("date") date: LocalDate
     ): List<HabitResponse>
 

@@ -1,6 +1,7 @@
 package com.example.habittracker.view.auth
 
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,7 +54,6 @@ import com.example.habittracker.data.auth.AuthResult
 import com.example.habittracker.viewModel.AuthViewModel
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
     navController : NavController,
@@ -67,23 +67,23 @@ fun SignUpScreen(
             when(result){
                 is AuthResult.Authorized -> {
                     navController.navigate("main_screen"){
-                        popUpTo("signin"){
+                        popUpTo("signup"){
                             inclusive = true
                         }
                     }
                 }
                 is AuthResult.Unauthorized -> {
-                    Toast.makeText(context, "You are not authorized", Toast.LENGTH_SHORT).show()
-
+                    Toast.makeText(context, "You are not authorized ${result.message}", Toast.LENGTH_SHORT).show()
                 }
                 is AuthResult.UnknownError -> {
-                    Toast.makeText(context, "An Unknown error occurred", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "An Unknown error occurred ${result.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
     val focusRequester = remember { FocusRequester() }
     val focusManager =  LocalFocusManager.current
+
     Scaffold(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -127,27 +127,7 @@ fun SignUpScreen(
                     }
                 )
             )
-//            OutlinedTextField(
-//                value = email,
-//                onValueChange = { email = it },
-//                label = { Text(text = "Email") },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(top = 10.dp, start = 20.dp, end = 20.dp),
-//                colors = TextFieldDefaults.outlinedTextFieldColors(
-//                    focusedBorderColor = Color.White,
-//                    unfocusedBorderColor = Color.Gray,
-//                    cursorColor = Color.White,
-//                ),
-//                keyboardOptions = KeyboardOptions(
-//                    imeAction = ImeAction.Next
-//                ),
-//                keyboardActions = KeyboardActions(
-//                    onNext = {
-//                        focusManager.moveFocus(FocusDirection.Down)
-//                    }
-//                )
-//            )
+
             OutlinedTextField(
                 value = state.signupPassword,
                 onValueChange = {
@@ -184,15 +164,6 @@ fun SignUpScreen(
             ) {
                 Text(text = "Sign up")
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Text(
-                text = "or with",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 150.dp)
-            )
-
             Spacer(modifier = Modifier.height(20.dp))
 
             val annotatedText = buildAnnotatedString {
@@ -224,11 +195,3 @@ fun SignUpScreen(
         }
     }
 }
-
-//
-//@Composable
-//@Preview
-//fun Oheh(){
-//    SignUpScreen(navController = rememberNavController())
-//}
-

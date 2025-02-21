@@ -4,7 +4,6 @@ import java.time.LocalDate
 
 data class HabitRequest(
     val habitId: String,
-    val userId: String,
     val name: String,
     val icon : String,
     val iconBackground: String,
@@ -15,5 +14,17 @@ data class HabitRequest(
 )
 
 enum class Frequency {
-    DAILY, WEEKLY, MONTHLY
+    EVERYDAY,
+    ALTERNATE,
+    WEEKLY,
+    MONTHLY
+}
+
+fun Frequency.toDisplayString(): String {
+    return when (this) {
+        Frequency.EVERYDAY -> "Everyday"
+        Frequency.ALTERNATE -> "Alternative"
+        Frequency.WEEKLY -> "Weekly"
+        Frequency.MONTHLY -> "Monthly"
+    }
 }

@@ -1,7 +1,7 @@
 package com.example.habittracker.data.auth
 
 import android.content.SharedPreferences
-import com.google.android.gms.auth.api.Auth
+import android.util.Log
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -9,23 +9,31 @@ class AuthRepositoryImpl @Inject constructor(
     private val api: AuthApi,
     private val sharedPrefs: SharedPreferences
 ): AuthRepository {
+
     override suspend fun signUp(username: String, password: String): AuthResult<Unit> {
         return try {
+            Log.d("TAG", "before: response and now sign in ")
+
             api.signUp(
                 request = AuthRequest(
                     username = username,
                     password = password
                 )
             )
+            Log.d("TAG", "signUp: response and now sign in ")
             signIn(username, password)
+
         } catch(e: HttpException){
             if (e.code() == 401){
-                AuthResult.Unauthorized()
+                Log.d("TAG", "signUp: $e.message")
+                AuthResult.Unauthorized(e.message)
             } else{
-                AuthResult.UnknownError()
+                Log.d("TAG", "signUp: $e.message")
+                AuthResult.UnknownError(e.message)
             }
         } catch (e: Exception){
-            AuthResult.UnknownError()
+            Log.d("TAG", "signUp: $e.message")
+            AuthResult.UnknownError(e.message)
         }
     }
 
@@ -37,6 +45,7 @@ class AuthRepositoryImpl @Inject constructor(
                     password = password
                 )
             )
+            Log.d("TAG", "signIn: ${response.token} ")
             sharedPrefs.edit()
                 .putString("jwt", response.token)
                 .apply()
@@ -55,18 +64,25 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun authenticate(): AuthResult<Unit> {
         return try {
+            Log.d("TAG", "authentication going on ")
+
             val token = sharedPrefs.getString("jwt", null) ?: return AuthResult.Unauthorized()
             api.authenticate(token)
+            Log.d("TAG", "authenticated")
 
             AuthResult.Authorized()
         } catch(e: HttpException){
             if (e.code() == 401){
-                AuthResult.Unauthorized()
+                Log.d("TAG", "unauthorized error ${e.message}")
+
+                AuthResult.Unauthorized(e.message)
             } else{
-                AuthResult.UnknownError()
+                Log.d("TAG", "unknown error ${e.message}")
+                AuthResult.UnknownError(e.message)
             }
         } catch (e: Exception){
-            AuthResult.UnknownError()
+            Log.d("TAG", "unknown error ${e.message}")
+            AuthResult.UnknownError(e.message)
         }
     }
 }

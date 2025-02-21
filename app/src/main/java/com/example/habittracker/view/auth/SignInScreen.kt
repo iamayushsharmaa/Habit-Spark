@@ -1,7 +1,5 @@
 package com.example.habittracker.view.auth
 
-
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,26 +12,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -42,7 +31,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -52,15 +40,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.habittracker.R
 import com.example.habittracker.data.auth.AuthResult
 import com.example.habittracker.viewModel.AuthViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+fun SignInScreen(
     viewModel: AuthViewModel = hiltViewModel(),
     navController: NavController,
 ) {
@@ -105,14 +90,14 @@ fun LoginScreen(
 
         ) {
             Text(
-                text = "Sign in",
+                text = "Sign in.",
                 modifier = Modifier.padding(horizontal = 20.dp),
-                fontSize = 30.sp,
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
             )
             Text(
-                text = "Please fill all the details to sign in.",
+                text = "Please enter email and password to sign in.",
                 modifier = Modifier.padding(horizontal = 20.dp),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
@@ -122,11 +107,11 @@ fun LoginScreen(
                 onValueChange = {
                     viewModel.onEvent(AuthUiEvent.SignInUsernameChanged(it))
                 },
-                label = { Text(text = "Username",color = Color.Black) },
+                label = { Text(text = "Create a username") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester)
                     .padding(top = 15.dp, start = 20.dp, end = 20.dp),
+
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next
                 ),
@@ -136,33 +121,28 @@ fun LoginScreen(
                     }
                 )
             )
+
             OutlinedTextField(
                 value = state.signinPassword,
                 onValueChange = {
                     viewModel.onEvent(AuthUiEvent.SignInPasswordChanged(it))
                 },
-                label = { Text(text = "Password", color = Color.Black)},
+                label = { Text(text = "Password") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp, start = 20.dp, end = 20.dp),
+                    .padding(top = 10.dp, start = 20.dp, end = 20.dp),
+
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next
+                    imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
+                    onDone = {
+                        focusManager.clearFocus()
                     }
                 )
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp),
-                Arrangement.End
-            ) {
-                Text(text = "Forget password?", Modifier.clickable { })
+            Spacer(Modifier.height(8.dp))
 
-            }
             Button(
                 onClick = {
                     viewModel.onEvent(AuthUiEvent.SignIn)
@@ -176,9 +156,8 @@ fun LoginScreen(
                     contentColor = Color.White
                 )
             ) {
-                Text(text = "Log in")
+                Text(text = "Sign in")
             }
-
             Spacer(modifier = Modifier.height(20.dp))
 
             val annotatedText = buildAnnotatedString {
@@ -207,8 +186,6 @@ fun LoginScreen(
                     }
                 )
             }
-
-
         }
 
     }

@@ -21,6 +21,7 @@ ktorClientLogging = "3.1.0"
 ktorClientSerializationVersion = "3.1.0"
 ktorSerializationKotlinxJsonVersion = "3.1.0"
 logbackClassic = "1.5.6"
+loggingInterceptor = "4.12.0"
 navigationCompose = "2.8.7"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -30,6 +31,7 @@ lifecycleRuntimeKtx = "2.8.4"
 activityCompose = "1.10.0"
 composeBom = "2025.02.00"
 material = "1.7.8"
+okhttp = "4.12.0"
 retrofit = "2.11.0"
 uiTextGoogleFonts = "1.7.8"
 playServicesAuth = "21.3.0"
@@ -74,6 +76,8 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientCore" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientLogging" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJsonVersion" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }

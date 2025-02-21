@@ -38,11 +38,11 @@ import java.time.LocalDate
 @Composable
 fun Home(
     habitViewModel: HabitsViewModel = hiltViewModel(),
-    userId: String,
-    date: LocalDate
 ) {
-    LaunchedEffect (Unit){
-        habitViewModel.getHabitsByDate(userId, date)
+    val date = LocalDate.now()
+
+    LaunchedEffect (date){
+        habitViewModel.getHabitsByDate(date)
     }
     val habits by habitViewModel.habitsUiState.collectAsState()
 
@@ -67,7 +67,7 @@ fun Home(
                 modifier = Modifier.padding(start = 15.dp, top = 15.dp)
             )
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
         WeekCalendarScreen()
         Box(
             modifier = Modifier
@@ -111,7 +111,7 @@ fun Home(
                         .fillMaxSize()
                 ) {
                     items(habits) { habit ->
-                        Text(text = habit.name)
+                        Text(text = habit.name, fontSize = 50.sp)
                     }
                 }
             }
@@ -141,10 +141,6 @@ fun ProgressBar(
 @Preview
 @Composable
 private fun Habit() {
-    Home(
-        userId = "123",
-        date = LocalDate.now()
-    )
-    
+    Home()
 }
 
