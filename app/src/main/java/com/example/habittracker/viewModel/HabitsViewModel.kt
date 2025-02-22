@@ -23,7 +23,7 @@ class HabitsViewModel @Inject constructor(
     private val habitsRepository: HabitsRepository
 ) : ViewModel() {
 
-    private val _habitsUiState = MutableStateFlow<UiState<List<HabitResponse>>>(UiState())
+    private val _habitsUiState = MutableStateFlow<UiState<List<HabitResponse>>>(UiState.Loading())
     val habitsUiState: StateFlow<UiState<List<HabitResponse>>> = _habitsUiState
 
 
@@ -38,9 +38,9 @@ class HabitsViewModel @Inject constructor(
             habitsRepository.getHabitsByDate(date)
                 .map { resource ->
                     when (resource) {
-                        is Resource.Loading -> UiState(isLoading = true)
-                        is Resource.Success -> UiState(data = resource.data)
-                        is Resource.Error -> UiState(errorMessage = resource.message)
+                        is Resource.Loading -> UiState.Loading()
+                        is Resource.Success -> UiState.Success(resource.data)
+                        is Resource.Error -> UiState.Error(resource.message)
                     }
                 }
                 .collect { uiState ->
@@ -53,9 +53,9 @@ class HabitsViewModel @Inject constructor(
             habitsRepository.getHabitsByDate(LocalDate.now())
                 .map { resource ->
                     when (resource) {
-                        is Resource.Loading -> UiState(isLoading = true)
-                        is Resource.Success -> UiState(data = resource.data)
-                        is Resource.Error -> UiState(errorMessage = resource.message)
+                        is Resource.Loading -> UiState.Loading()
+                        is Resource.Success -> UiState.Success(resource.data)
+                        is Resource.Error -> UiState.Error(resource.message)
                     }
                 }
                 .collect { uiState ->

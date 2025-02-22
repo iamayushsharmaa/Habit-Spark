@@ -1,7 +1,7 @@
 package com.example.habittracker.viewModel
 
-data class UiState<T>(
-    val isLoading: Boolean = false,
-    val data: T? = null,
-    val errorMessage: String? = null
-)
+sealed class UiState<T> {
+    data class Success<T>(val data: T) : UiState<T>()
+    data class Error<T>(val message: String) : UiState<T>()
+    class Loading<T> : UiState<T>()
+}

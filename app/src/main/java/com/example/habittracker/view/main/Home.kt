@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,6 +50,7 @@ import com.example.habittracker.data.remote.response.HabitResponse
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.example.habittracker.viewModel.HabitsViewModel
+import com.example.habittracker.viewModel.UiState
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Date
@@ -58,6 +61,8 @@ fun Home(
     habitViewModel: HabitsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val currentDate = LocalDate.now()
+    val startDate = currentDate.minusMonths(11)
 
     var date by remember { mutableStateOf<LocalDate>(LocalDate.now()) }
 
@@ -69,7 +74,7 @@ fun Home(
     LaunchedEffect (date){
         habitViewModel.getHabitsByDate(date)
     }
-    val habits by habitViewModel.habitsUiState.collectAsState()
+    val habitState by habitViewModel.habitsUiState.collectAsState()
     var selectedHabit by remember { mutableStateOf<HabitResponse?>(null) }
 
     ModalBottomSheetLayout(
@@ -127,7 +132,14 @@ fun Home(
                     modifier = Modifier.padding(start = 15.dp, top = 15.dp)
                 )
             }
-            Spacer(Modifier.height(12.dp))
+
+            Spacer(Modifier.height(8.dp))
+
+            TrackerLayout(
+                startDate = startDate,
+                currentDate = currentDate,
+            )
+
             WeekCalendarScreen(
                 modifier = Modifier
                     .padding(start = 4.dp),
@@ -144,12 +156,13 @@ fun Home(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = CenterHorizontally
                 ) {
-                    when {
-                        habits.isLoading -> ProgressBar(
+                    when (habitState){
+                         is UiState.Loading -> ProgressBar(
                             modifier = Modifier
                                 .align(CenterHorizontally)
                         )
-                        habits.errorMessage != null -> {
+                        is UiState.Error -> {
+                            val message = (habitState as UiState.Error<List<HabitResponse>>).message
                             Text(
                                 text = "You have no habits at the moment",
                                 fontSize = 16.sp,
@@ -163,12 +176,13 @@ fun Home(
                             )
                             Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
                         }
-                        habits.data != null -> {
+                        is UiState.Success -> {
+                            val habits = (habitState as UiState.Success<List<HabitResponse>>).data
                             LazyColumn(
                                 modifier = Modifier
                                     .fillMaxSize()
                             ) {
-                                items(habits.data!!) { habit ->
+                                items(habits) { habit ->
                                     HabitStyle(
                                         habit,
                                         onClick = {

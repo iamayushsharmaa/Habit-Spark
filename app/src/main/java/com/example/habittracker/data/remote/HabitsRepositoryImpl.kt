@@ -21,9 +21,8 @@ class HabitsRepositoryImpl @Inject constructor(
     override suspend fun createHabit(habit: HabitRequest){
 
         try {
-            val token = sharedPrefs.getString("jwt", null) ?: throw Exception("User not authenticated")
-            habitApi.createHabit("Bearer $token",habit)
-
+            val jwtToken = sharedPrefs.getString("jwt", null) ?: throw Exception("User not authenticated")
+            habitApi.createHabit(habit, "Bearer $jwtToken")
         } catch (e: HttpException) {
             Log.d("TAG", "createHabit: io error $e")
         } catch (e: IOException) {
@@ -53,8 +52,8 @@ class HabitsRepositoryImpl @Inject constructor(
         request: HabitCompletionRequest
     ) {
         try {
-            habitApi.markHabitAsCompleted(habitId, request)
-
+            val token = sharedPrefs.getString("jwt", null) ?: throw Exception("User not authenticated")
+            habitApi.markHabitAsCompleted("Bearer $token",habitId, request)
         } catch (e: HttpException) {
             Log.d("TAG", "updateHabit: $e")
         } catch (e: IOException) {
@@ -65,7 +64,8 @@ class HabitsRepositoryImpl @Inject constructor(
 
     override suspend fun deleteHabit(habitId: String) {
         try {
-            habitApi.deleteHabits(habitId)
+            val token = sharedPrefs.getString("jwt", null) ?: throw Exception("User not authenticated")
+            habitApi.deleteHabits("Bearer $token",habitId)
         } catch (e: HttpException) {
             Log.d("TAG", "deleteHabit: http error $e")
 

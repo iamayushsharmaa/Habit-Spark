@@ -17,8 +17,8 @@ interface HabitApi {
 
     @POST("habits")
     suspend fun createHabit(
-        @Header("Authorization") token: String,
-        @Body habit: HabitRequest
+        @Body habitRequest: HabitRequest,
+        @Header("Authorization") authToken: String
     )
 
     @GET("habits")
@@ -29,12 +29,14 @@ interface HabitApi {
 
     @PUT("habits/{habitId}")
     suspend fun markHabitAsCompleted(
+        @Header("Authorization") token: String,
         @Path("habitId") habitId: String,
         @Body request: HabitCompletionRequest
     )
 
     @DELETE("habits/{habitId}")
     suspend fun deleteHabits(
+        @Header("Authorization") token: String,
         @Path("habitId") habitId: String,
     )
 }
