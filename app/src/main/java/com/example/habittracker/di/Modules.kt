@@ -75,9 +75,4 @@ object RepositoryModule {
         return HabitsRepositoryImpl(habitApi,sharedPrefs)
     }
 
-    @Provides
-    @Singleton
-    fun provideCalendarRepository(): CalendarRepository {
-        return CalendarRepository()
-    }
 }
