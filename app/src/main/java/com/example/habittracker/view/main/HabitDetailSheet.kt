@@ -23,7 +23,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,11 +31,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.habittracker.R
+import com.example.habittracker.data.remote.response.HabitResponse
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 
 @Composable
 fun HabitDetailSheet(
+    habit: HabitResponse,
     onDismissRequest:() -> Unit,
     onDeleteClick:() -> Unit,
     onCompleteClick:() -> Unit
@@ -73,7 +74,7 @@ fun HabitDetailSheet(
             }
             Spacer(Modifier.weight(1f))
             Text(
-                text = "Fitness",
+                text = habit.name,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 25.sp,
@@ -108,7 +109,7 @@ fun HabitDetailSheet(
 
         Spacer(Modifier.height(20.dp))
         Text(
-            text = "Description",
+            text = habit.description,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 15.sp,
@@ -119,7 +120,7 @@ fun HabitDetailSheet(
         BoxDesign(text = "Description is here and if you want to change it you can from here and update it")
 
         Text(
-            text = "Goal",
+            text = "Target",
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 15.sp,
@@ -128,7 +129,7 @@ fun HabitDetailSheet(
         )
 
         OutlinedTextField(
-            value = "25 min",
+            value = "${habit.value} ${habit.unit}",
             onValueChange = {},
             modifier = Modifier
                 .fillMaxWidth()
@@ -165,7 +166,7 @@ fun HabitDetailSheet(
         )
         Spacer(Modifier.weight(1f))
         Button(
-            onClick = { },
+            onClick = { onCompleteClick() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
@@ -210,12 +211,13 @@ fun BoxDesign(text : String) {
     }
 }
 
-@Preview
-@Composable
-private fun DetailPrev() {
-    HabitDetailSheet(
-        onDismissRequest = {},
-        onDeleteClick = {},
-        onCompleteClick = {}
-    )
-}
+//@Preview
+//@Composable
+//private fun DetailPrev() {
+//    HabitDetailSheet(
+//        habit = HabitResponse(),
+//        onDismissRequest = {},
+//        onDeleteClick = {},
+//        onCompleteClick = { }
+//    )
+//}

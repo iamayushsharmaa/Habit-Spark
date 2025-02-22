@@ -19,67 +19,98 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.habittracker.data.calander.CalanderViewModel
+import com.example.habittracker.data.calander.CalendarViewModel
 import com.example.habittracker.ui.theme.AppColor
+import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 @Composable
 fun WeekCalendarScreen(
-    viewModel: CalanderViewModel = hiltViewModel()
+    modifier: Modifier = Modifier,
+    viewModel: CalendarViewModel = hiltViewModel(),
+    onDateClicked: (LocalDate) -> Unit
 ) {
-    val weekDates by viewModel.weekDates.collectAsState()
+    val currentDate = viewModel.currentDate.collectAsState().value
+    val selectedDate = viewModel.selectedDate.collectAsState().value
+    val pagerState = rememberPagerState(initialPage = Int.MAX_VALUE / 2)
 
-    val pagerState = rememberPagerState()
+    Column(modifier = modifier) {
+        Text(
+            text = viewModel.getWeekDates(pagerState.currentPage - Int.MAX_VALUE / 2).monthName,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(16.dp)
+        )
 
-    LaunchedEffect(pagerState.currentPage) {
-        val newOffset = pagerState.currentPage - Int.MAX_VALUE / 2
-        viewModel.updateWeekOffset(newOffset)
-    }
+        HorizontalPager(
+            count = Int.MAX_VALUE,
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth()
+        ) { page ->
+            val weekData = viewModel.getWeekDates(page - Int.MAX_VALUE / 2)
 
-    HorizontalPager(
-        count = Int.MAX_VALUE,
-        state = pagerState,
-        modifier = Modifier.fillMaxWidth()
-    ) { page ->
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            weekDates.forEach { calendarDay ->
-                CalanderStyle(
-                    modifier = Modifier.padding(5.dp),
-                    day = calendarDay.day,
-                    date = calendarDay.date,
-                    isCurrentDate = calendarDay.isCurrentDate
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                weekData.weekDates.forEach { date ->
+                    CalendarStyle(
+                        modifier = Modifier.padding(5.dp),
+                        day = date.format(DateTimeFormatter.ofPattern("EEE")),
+                        date = date.dayOfMonth.toString(),
+                        isCurrentDate = date == currentDate,
+                        isSelectedDate = date == selectedDate,
+                        onDateClicked = {
+                            viewModel.onDateSelected(date)
+                            onDateClicked(date)
+                        }
+                    )
+                }
             }
         }
+
     }
+
 }
 
 @Composable
-fun CalanderStyle(
+fun CalendarStyle(
     modifier: Modifier = Modifier,
     day: String,
     date: String,
-    isCurrentDate: Boolean = false
+    isSelectedDate: Boolean,
+    isCurrentDate: Boolean,
+    onDateClicked : () -> Unit
 ) {
     Card(
         modifier = Modifier
-            .height(65.dp)
-            .width(46.dp),
-        shape = RoundedCornerShape(16.dp),
+            .height(62.dp)
+            .width(48.dp),
+        onClick = { onDateClicked() },
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isCurrentDate) AppColor.Blue else AppColor.WhiteFade
+            containerColor = when {
+                isSelectedDate -> AppColor.Black
+                isCurrentDate -> AppColor.Black
+                else -> AppColor.WhiteFade
+            },
+            contentColor =  when {
+                isSelectedDate -> AppColor.White
+                isCurrentDate -> AppColor.White
+                else -> AppColor.Black
+            }
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
@@ -92,18 +123,17 @@ fun CalanderStyle(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = day,
-                textAlign = TextAlign.Center,
-                fontSize = 15.sp,
-                color = if (isCurrentDate) AppColor.White else AppColor.Black,
+                text = date,
+                fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(2.dp)
+                fontSize = 22.sp,
             )
             Text(
-                text = date,
+                text = day,
+                fontFamily = poppinsFontFamily,
+                textAlign = TextAlign.Center,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp,
-                color = if (isCurrentDate) AppColor.White else AppColor.Black
             )
         }
     }

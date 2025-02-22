@@ -8,6 +8,7 @@ data class HabitRequest(
     val icon : String,
     val iconBackground: String,
     val description: String,
+    val goal : Goal,
     val frequency: Frequency,
     val startDate: LocalDate,
     val isActive: Boolean
@@ -19,6 +20,11 @@ enum class Frequency {
     WEEKLY,
     MONTHLY
 }
+
+data class Goal(
+    val value: String,
+    val unit: String
+)
 
 fun Frequency.toDisplayString(): String {
     return when (this) {

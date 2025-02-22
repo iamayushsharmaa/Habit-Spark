@@ -60,7 +60,7 @@ import io.ktor.util.debug.initContextInDebugMode
 
 @Composable
 fun HabitStyle(
-    //habit: HabitResponse,
+    habit: HabitResponse,
     onClick: () -> Unit
 ) {
 
@@ -98,7 +98,7 @@ fun HabitStyle(
                 .padding(vertical = 9.dp)
         ){
             Text(
-                text = "Fitness",
+                text = habit.name,
                 fontFamily = poppinsFontFamily,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -113,7 +113,7 @@ fun HabitStyle(
                 contentAlignment = Alignment.Center
             ){
                 Text(
-                    text = "Active", // habit status -> Done, Active
+                    text = if (habit.isCompleted) "Done" else "Active",
                     fontFamily = poppinsFontFamily,
                     fontSize = 12.sp,
                     color = AppColor.Black,
@@ -138,7 +138,7 @@ fun HabitStyle(
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Text(
-                text = "25", // value
+                text = habit.value,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 21.sp,
@@ -146,7 +146,7 @@ fun HabitStyle(
                 color = AppColor.Black
             )
             Text(
-                text = "min", // unit
+                text = habit.unit,
                 color = AppColor.BlackFade,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
@@ -156,9 +156,3 @@ fun HabitStyle(
         }
     }
 }
-//
-//@Preview
-//@Composable
-//private fun HabitPrev() {
-//    HabitStyle(onClick = {})
-//}

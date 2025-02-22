@@ -51,6 +51,7 @@ import androidx.navigation.NavController
 import com.example.habittracker.common.Res
 import com.example.habittracker.common.Res.icons
 import com.example.habittracker.data.remote.request.Frequency
+import com.example.habittracker.data.remote.request.Goal
 import com.example.habittracker.data.remote.request.HabitRequest
 import com.example.habittracker.data.remote.request.toDisplayString
 import com.example.habittracker.ui.theme.AppColor
@@ -362,29 +363,41 @@ fun AddHabit(
                     icon = selectedIcon.toString(),
                     iconBackground = selectedColor.toString(),
                     description = description,
+                    goal = Goal(
+                        value = value,
+                        unit = unit
+                    ),
                     frequency = selectedFrequency,
                     startDate = LocalDate.now(),
                     isActive = true
                 )
-
-                CoroutineScope(Dispatchers.Main).launch {
-                    try {
-                        habitsViewModel.createHabit(habitRequest)
-                        Toast.makeText(context, "Your habit is ready to go!", Toast.LENGTH_SHORT).show()
-                        navController.navigate(BottomNavItem.Home.route){
-                            popUpTo(BottomNavItem.AddHabit.route){
-                                inclusive = true
+                if (habitName.isNotBlank()){
+                    CoroutineScope(Dispatchers.Main).launch {
+                        try {
+                            habitsViewModel.createHabit(habitRequest)
+                            Toast.makeText(
+                                context,
+                                "Your habit is ready to go!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            navController.navigate(BottomNavItem.Home.route) {
+                                popUpTo(BottomNavItem.AddHabit.route) {
+                                    inclusive = true
+                                }
                             }
+                            habitName = ""
+                            description = ""
+                            selectedIcon = null
+                            selectedColor = Res.colorList[0]
+                            selectedFrequency = Frequency.EVERYDAY
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Failed to create habit", Toast.LENGTH_SHORT)
+                                .show()
                         }
-                        habitName = ""
-                        description = ""
-                        selectedIcon = null
-                        selectedColor = Res.colorList[0]
-                        selectedFrequency = Frequency.EVERYDAY
-                    } catch (e: Exception) {
-                        Toast.makeText(context, "Failed to create habit", Toast.LENGTH_SHORT).show()
                     }
-                }            },
+                }else{
+                    Toast.makeText(context, "Please enter a habit name", Toast.LENGTH_SHORT).show()
+                } },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(66.dp)

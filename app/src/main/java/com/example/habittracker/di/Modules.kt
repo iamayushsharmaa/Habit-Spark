@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import com.example.habittracker.data.auth.AuthApi
 import com.example.habittracker.data.auth.AuthRepository
 import com.example.habittracker.data.auth.AuthRepositoryImpl
-import com.example.habittracker.data.calander.CalendarRepository
 import com.example.habittracker.data.remote.HabitApi
 import com.example.habittracker.data.remote.HabitsRepository
 import com.example.habittracker.data.remote.HabitsRepositoryImpl

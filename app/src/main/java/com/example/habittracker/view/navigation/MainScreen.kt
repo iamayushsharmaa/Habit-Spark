@@ -48,7 +48,7 @@ fun MainScreen(outerNavController: NavHostController) {
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(BottomNavItem.Home.route) {
-                    Home()
+                    Home(navController = outerNavController)
                 }
                 composable(BottomNavItem.AddHabit.route) {
                     AddHabit(
