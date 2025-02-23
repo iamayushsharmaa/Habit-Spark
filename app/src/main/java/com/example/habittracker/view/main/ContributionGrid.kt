@@ -90,7 +90,6 @@ fun ContributionGrid(
         tempDate = tempDate.plusDays(1)
     }
 
-    // Filter active habits (optional, depending on your needs)
     val activeHabits = habits.filter { it.isActive }
 
     LazyVerticalGrid(
@@ -111,7 +110,7 @@ fun ContributionGrid(
             Box(
                 modifier = Modifier
                     .padding(2.dp)
-                    .size(16.dp)
+                    .size(4.dp)
                     .background(
                         color = if (allCompleted) Color.Green else Color.Gray.copy(alpha = 0.3f),
                         shape = RoundedCornerShape(4.dp)

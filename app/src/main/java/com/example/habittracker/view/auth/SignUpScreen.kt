@@ -51,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.habittracker.data.auth.AuthResult
+import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.viewModel.AuthViewModel
 
 
@@ -73,10 +74,10 @@ fun SignUpScreen(
                     }
                 }
                 is AuthResult.Unauthorized -> {
-                    Toast.makeText(context, "You are not authorized ${result.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "You are not authorized", Toast.LENGTH_SHORT).show()
                 }
                 is AuthResult.UnknownError -> {
-                    Toast.makeText(context, "An Unknown error occurred ${result.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "An Unknown error occurred", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -84,13 +85,17 @@ fun SignUpScreen(
     val focusRequester = remember { FocusRequester() }
     val focusManager =  LocalFocusManager.current
 
-    Scaffold(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColor.White)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
                 .padding(it)
-                .background(color = androidx.compose.material3.MaterialTheme.colorScheme.background),
+                .background(color = AppColor.White),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
 
@@ -99,6 +104,7 @@ fun SignUpScreen(
                 text = "Create a account",
                 modifier = Modifier.padding(horizontal = 20.dp),
                 fontSize = 40.sp,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
             )
@@ -106,7 +112,8 @@ fun SignUpScreen(
                 text = "Please fill all the details to sign up.",
                 modifier = Modifier.padding(horizontal = 20.dp),
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
+                color = AppColor.Black,
+                fontWeight = FontWeight.Medium,
             )
             OutlinedTextField(
                 value = state.signupUsername,
@@ -125,6 +132,18 @@ fun SignUpScreen(
                     onNext = {
                         focusManager.moveFocus(FocusDirection.Down)
                     }
+                ),
+                singleLine = true,
+                maxLines = 1,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = AppColor.Black,
+                    unfocusedTextColor = AppColor.Black,
+                    focusedContainerColor = AppColor.WhiteFade,
+                    unfocusedContainerColor = AppColor.WhiteFade,
+                    focusedIndicatorColor = AppColor.Black,
+                    unfocusedIndicatorColor = AppColor.WhiteFade,
+                    focusedLabelColor = AppColor.BlackFade,
+                    unfocusedLabelColor = AppColor.BlackFade
                 )
             )
 
@@ -145,6 +164,18 @@ fun SignUpScreen(
                     onDone = {
                         focusManager.clearFocus()
                     }
+                ),
+                singleLine = true,
+                maxLines = 1,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = AppColor.Black,
+                    unfocusedTextColor = AppColor.Black,
+                    focusedContainerColor = AppColor.WhiteFade,
+                    unfocusedContainerColor = AppColor.WhiteFade,
+                    focusedIndicatorColor = AppColor.Black,
+                    unfocusedIndicatorColor = AppColor.WhiteFade,
+                    focusedLabelColor = AppColor.BlackFade,
+                    unfocusedLabelColor = AppColor.BlackFade
                 )
             )
             Spacer(Modifier.height(8.dp))

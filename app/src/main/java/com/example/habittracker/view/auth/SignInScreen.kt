@@ -19,7 +19,9 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracker.data.auth.AuthResult
+import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.viewModel.AuthViewModel
 
 @Composable
@@ -64,11 +67,10 @@ fun SignInScreen(
                     }
                 }
                 is AuthResult.Unauthorized -> {
-                    Toast.makeText(context, "You are not authorized", Toast.LENGTH_SHORT).show()
-
+                    Toast.makeText(context, result.message , Toast.LENGTH_SHORT).show()
                 }
                 is AuthResult.UnknownError -> {
-                    Toast.makeText(context, "An Unknown error occurred", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -78,13 +80,17 @@ fun SignInScreen(
     }
     val focusManager = LocalFocusManager.current
 
-    Scaffold(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColor.White)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
                 .padding(it)
-                .background(color = androidx.compose.material3.MaterialTheme.colorScheme.background),
+                .background(color = AppColor.White),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
 
@@ -93,6 +99,7 @@ fun SignInScreen(
                 text = "Sign in.",
                 modifier = Modifier.padding(horizontal = 20.dp),
                 fontSize = 40.sp,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
             )
@@ -100,7 +107,8 @@ fun SignInScreen(
                 text = "Please enter email and password to sign in.",
                 modifier = Modifier.padding(horizontal = 20.dp),
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
+                color = Color.Black,
+                fontWeight = FontWeight.Medium,
             )
             OutlinedTextField(
                 value = state.signinUsername,
@@ -119,7 +127,21 @@ fun SignInScreen(
                     onNext = {
                         focusManager.moveFocus(FocusDirection.Down)
                     }
+                ),
+                singleLine = true,
+                maxLines = 1,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = AppColor.Black,
+                    unfocusedTextColor = AppColor.Black,
+                    focusedContainerColor = AppColor.WhiteFade,
+                    unfocusedContainerColor = AppColor.WhiteFade,
+                    focusedIndicatorColor = AppColor.Black,
+                    unfocusedIndicatorColor = AppColor.WhiteFade,
+                    focusedLabelColor = AppColor.BlackFade,
+                    unfocusedLabelColor = AppColor.BlackFade,
+
                 )
+
             )
 
             OutlinedTextField(
@@ -139,6 +161,18 @@ fun SignInScreen(
                     onDone = {
                         focusManager.clearFocus()
                     }
+                ),
+                singleLine = true,
+                maxLines = 1,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = AppColor.Black,
+                    unfocusedTextColor = AppColor.Black,
+                    focusedContainerColor = AppColor.WhiteFade,
+                    unfocusedContainerColor = AppColor.WhiteFade,
+                    focusedIndicatorColor = AppColor.Black,
+                    unfocusedIndicatorColor = AppColor.WhiteFade,
+                    focusedLabelColor = AppColor.BlackFade,
+                    unfocusedLabelColor = AppColor.BlackFade
                 )
             )
             Spacer(Modifier.height(8.dp))
@@ -149,8 +183,8 @@ fun SignInScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(62.dp)
-                    .padding(top = 10.dp, start = 5.dp, end = 5.dp),
+                    .height(70.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
                     contentColor = Color.White
@@ -165,7 +199,7 @@ fun SignInScreen(
 
                 pushStringAnnotation(tag = "SIGN_UP", annotation = "sign_up")
                 withStyle(style = SpanStyle(color = Color(0xFF0538D1))) {
-                    append("Sign up!")
+                    append(" Sign up! ")
                 }
                 pop()
             }
@@ -181,7 +215,11 @@ fun SignInScreen(
                     onClick = { offset ->
                         annotatedText.getStringAnnotations(tag = "SIGN_UP", start = offset, end = offset)
                             .firstOrNull()?.let {
-                                navController.navigate("signup")
+                                navController.navigate("signup"){
+                                    popUpTo("signin"){
+                                        inclusive = true
+                                    }
+                                }
                             }
                     }
                 )

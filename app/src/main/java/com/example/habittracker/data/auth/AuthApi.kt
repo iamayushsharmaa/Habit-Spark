@@ -21,4 +21,7 @@ interface AuthApi {
     suspend fun authenticate(
         @Header("Authorization") token: String
     )
+
+    @GET("user/me")
+    suspend fun getUserInfo(@Header("Authorization") token: String): UserData
 }

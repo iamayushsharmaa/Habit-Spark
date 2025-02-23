@@ -145,39 +145,37 @@ fun Home(
                     .padding(start = 4.dp),
                 onDateClicked = { }
             )
-            Box(
+
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = CenterHorizontally
-                ) {
-                    when (habitState){
-                         is UiState.Loading -> ProgressBar(
+                when (habitState){
+                    is UiState.Loading -> ProgressBar(
+                        modifier = Modifier
+                            .align(CenterHorizontally)
+                    )
+                    is UiState.Error -> {
+                        val message = (habitState as UiState.Error<List<HabitResponse>>).message
+                        Text(
+                            text = "You have no habits at the moment",
+                            fontSize = 16.sp,
+                            color = AppColor.Black,
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Normal,
                             modifier = Modifier
-                                .align(CenterHorizontally)
+                                .padding(start = 15.dp, top = 15.dp)
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center
                         )
-                        is UiState.Error -> {
-                            val message = (habitState as UiState.Error<List<HabitResponse>>).message
-                            Text(
-                                text = "You have no habits at the moment",
-                                fontSize = 16.sp,
-                                color = AppColor.Black,
-                                fontFamily = poppinsFontFamily,
-                                fontWeight = FontWeight.Normal,
-                                modifier = Modifier
-                                    .padding(start = 15.dp, top = 15.dp)
-                                    .fillMaxWidth(),
-                                textAlign = TextAlign.Center
-                            )
-                            Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
-                        }
-                        is UiState.Success -> {
-                            val habits = (habitState as UiState.Success<List<HabitResponse>>).data
+                        Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    }
+                    is UiState.Success -> {
+                        val habits = (habitState as UiState.Success<List<HabitResponse>>).data
+                        if( habits != null) {
                             LazyColumn(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -194,6 +192,18 @@ fun Home(
                                     )
                                 }
                             }
+                        }else{
+                            Text(
+                                text = "Add new habits",
+                                fontSize = 16.sp,
+                                color = AppColor.Black,
+                                fontFamily = poppinsFontFamily,
+                                fontWeight = FontWeight.Normal,
+                                modifier = Modifier
+                                    .padding(start = 15.dp, top = 15.dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
                 }
