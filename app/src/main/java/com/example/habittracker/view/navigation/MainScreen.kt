@@ -1,11 +1,10 @@
 package com.example.habittracker.view.navigation
 
 
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -22,7 +21,6 @@ import com.example.habittracker.view.main.BottomNavBar
 import com.example.habittracker.view.main.Home
 import com.example.habittracker.view.main.Profile
 import kotlinx.coroutines.CoroutineExceptionHandler
-import java.time.LocalDate
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -41,7 +39,7 @@ fun MainScreen(outerNavController: NavHostController) {
             bottomBar = {
                 BottomNavBar(navController = innerNavController)
             }
-        ) {  innerPadding->
+        ) { innerPadding ->
             NavHost(
                 navController = innerNavController,
                 startDestination = BottomNavItem.Home.route,

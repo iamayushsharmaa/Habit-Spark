@@ -7,7 +7,11 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.habittracker.common.Res
 
-sealed class BottomNavItem(val iconBlank: Int, val iconFilled: Int, val route: String) {
+sealed class BottomNavItem(
+    val iconBlank: Int,
+    val iconFilled: Int,
+    val route: String
+) {
 
     object Home : BottomNavItem( Res.houseIconBlank, Res.houseIconFilled , "home")
     object AddHabit : BottomNavItem( Res.addIconBlank, Res.addIconFilled, "add_habit")
