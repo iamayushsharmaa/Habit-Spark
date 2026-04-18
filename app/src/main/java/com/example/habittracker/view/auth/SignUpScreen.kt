@@ -1,14 +1,12 @@
 package com.example.habittracker.view.auth
 
 
-import android.util.Log
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,11 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -44,46 +40,46 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.habittracker.data.auth.AuthResult
+import com.example.habittracker.common.ui_states.AuthState
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.viewModel.AuthViewModel
 
 
 @Composable
 fun SignUpScreen(
-    navController : NavController,
+    navController: NavController,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
     val context = LocalContext.current
 
-    LaunchedEffect (viewModel, context){
-        viewModel.authResult.collect{ result ->
-            when(result){
-                is AuthResult.Authorized -> {
-                    navController.navigate("main_screen"){
-                        popUpTo("signup"){
-                            inclusive = true
-                        }
-                    }
-                }
-                is AuthResult.Unauthorized -> {
-                    Toast.makeText(context, "You are not authorized", Toast.LENGTH_SHORT).show()
-                }
-                is AuthResult.UnknownError -> {
-                    Toast.makeText(context, "An Unknown error occurred", Toast.LENGTH_SHORT).show()
+    var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+
+    LaunchedEffect(state) {
+        when (state) {
+            is AuthState.Success -> {
+                navController.navigate("main_screen") {
+                    popUpTo("signup") { inclusive = true }
                 }
             }
+
+            is AuthState.Error -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {}
         }
     }
+
     val focusRequester = remember { FocusRequester() }
-    val focusManager =  LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
 
     Scaffold(
         modifier = Modifier
@@ -116,11 +112,11 @@ fun SignUpScreen(
                 fontWeight = FontWeight.Medium,
             )
             OutlinedTextField(
-                value = state.signupUsername,
+                value = name,
                 onValueChange = {
-                    viewModel.onEvent(AuthUiEvent.SignUpUsernameChanged(it))
+                    name = it
                 },
-                label = { Text(text = "Create a username") },
+                label = { Text(text = "Enter your name") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 15.dp, start = 20.dp, end = 20.dp),
@@ -148,9 +144,41 @@ fun SignUpScreen(
             )
 
             OutlinedTextField(
-                value = state.signupPassword,
+                value = email,
                 onValueChange = {
-                    viewModel.onEvent(AuthUiEvent.SignUpPasswordChanged(it))
+                    email = it
+                },
+                label = { Text(text = "Enter your email") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 15.dp, start = 20.dp, end = 20.dp),
+
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    }
+                ),
+                singleLine = true,
+                maxLines = 1,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = AppColor.Black,
+                    unfocusedTextColor = AppColor.Black,
+                    focusedContainerColor = AppColor.WhiteFade,
+                    unfocusedContainerColor = AppColor.WhiteFade,
+                    focusedIndicatorColor = AppColor.Black,
+                    unfocusedIndicatorColor = AppColor.WhiteFade,
+                    focusedLabelColor = AppColor.BlackFade,
+                    unfocusedLabelColor = AppColor.BlackFade
+                )
+            )
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                    password = it
                 },
                 label = { Text(text = "Password") },
                 modifier = Modifier
@@ -182,7 +210,7 @@ fun SignUpScreen(
 
             Button(
                 onClick = {
-                    viewModel.onEvent(AuthUiEvent.SignUp)
+                    viewModel.signUp(name, email, password)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -216,7 +244,11 @@ fun SignUpScreen(
                 ClickableText(
                     text = annotatedText,
                     onClick = { offset ->
-                        annotatedText.getStringAnnotations(tag = "SIGN_IN", start = offset, end = offset)
+                        annotatedText.getStringAnnotations(
+                            tag = "SIGN_IN",
+                            start = offset,
+                            end = offset
+                        )
                             .firstOrNull()?.let {
                                 navController.navigate("signin")
                             }

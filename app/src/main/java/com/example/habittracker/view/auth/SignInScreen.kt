@@ -2,11 +2,9 @@ package com.example.habittracker.view.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,21 +13,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.habittracker.data.auth.AuthResult
+import com.example.habittracker.common.ui_states.AuthState
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.viewModel.AuthViewModel
 
@@ -56,26 +56,26 @@ fun SignInScreen(
     val state = viewModel.state
     val context = LocalContext.current
 
-    LaunchedEffect (viewModel, context){
-        viewModel.authResult.collect{ result ->
-            when(result){
-                is AuthResult.Authorized -> {
-                    navController.navigate("main_screen"){
-                        popUpTo("signin"){
-                            inclusive = true
-                        }
-                    }
-                }
-                is AuthResult.Unauthorized -> {
-                    Toast.makeText(context, result.message , Toast.LENGTH_SHORT).show()
-                }
-                is AuthResult.UnknownError -> {
-                    Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    LaunchedEffect(state) {
+        when (state) {
+            is AuthState.Success -> {
+                navController.navigate("main_screen") {
+                    popUpTo("signin") { inclusive = true }
                 }
             }
+
+            is AuthState.Error -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {}
         }
     }
-    val focusRequester = remember{
+
+    val focusRequester = remember {
         FocusRequester()
     }
     val focusManager = LocalFocusManager.current
@@ -111,10 +111,8 @@ fun SignInScreen(
                 fontWeight = FontWeight.Medium,
             )
             OutlinedTextField(
-                value = state.signinUsername,
-                onValueChange = {
-                    viewModel.onEvent(AuthUiEvent.SignInUsernameChanged(it))
-                },
+                value = email,
+                onValueChange = { email = it },
                 label = { Text(text = "Create a username") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -140,15 +138,13 @@ fun SignInScreen(
                     focusedLabelColor = AppColor.BlackFade,
                     unfocusedLabelColor = AppColor.BlackFade,
 
-                )
+                    )
 
             )
 
             OutlinedTextField(
-                value = state.signinPassword,
-                onValueChange = {
-                    viewModel.onEvent(AuthUiEvent.SignInPasswordChanged(it))
-                },
+                value = password,
+                onValueChange = { password = it },
                 label = { Text(text = "Password") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -179,7 +175,7 @@ fun SignInScreen(
 
             Button(
                 onClick = {
-                    viewModel.onEvent(AuthUiEvent.SignIn)
+                    viewModel.signIn(email, password)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -213,16 +209,29 @@ fun SignInScreen(
                 ClickableText(
                     text = annotatedText,
                     onClick = { offset ->
-                        annotatedText.getStringAnnotations(tag = "SIGN_UP", start = offset, end = offset)
+                        annotatedText.getStringAnnotations(
+                            tag = "SIGN_UP",
+                            start = offset,
+                            end = offset
+                        )
                             .firstOrNull()?.let {
-                                navController.navigate("signup"){
-                                    popUpTo("signin"){
+                                navController.navigate("signup") {
+                                    popUpTo("signin") {
                                         inclusive = true
                                     }
                                 }
                             }
                     }
                 )
+            }
+        }
+
+        if (state is AuthState.Loading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
 
