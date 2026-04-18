@@ -3,7 +3,6 @@ package com.example.habittracker.di
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import com.example.habittracker.data.auth.AuthApi
 import com.example.habittracker.data.auth.AuthRepository
 import com.example.habittracker.data.auth.AuthRepositoryImpl
 import com.example.habittracker.data.remote.HabitApi

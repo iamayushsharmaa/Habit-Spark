@@ -5,81 +5,71 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.habittracker.common.ui_states.AuthState
 import com.example.habittracker.data.auth.AuthRepository
 import com.example.habittracker.data.auth.AuthResult
-import com.example.habittracker.view.auth.AuthState
-import com.example.habittracker.view.auth.AuthUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repository: AuthRepository
-): ViewModel() {
+) : ViewModel() {
 
-    var state by mutableStateOf(AuthState())
+    var state by mutableStateOf<AuthState>(AuthState.Idle)
+        private set
 
-    private val resultChannel = Channel<AuthResult<Unit>>()
-    val authResult = resultChannel.receiveAsFlow()
-
-    init {
-        authenticate()
-    }
-    fun onEvent(event: AuthUiEvent){
-        when(event){
-            is AuthUiEvent.SignInUsernameChanged -> {
-                state = state.copy(signinUsername = event.value)
-            }
-            is AuthUiEvent.SignInPasswordChanged ->{
-                state = state.copy(signinPassword = event.value)
-            }
-            is AuthUiEvent.SignIn -> {
-                signin()
-            }
-            is AuthUiEvent.SignUpUsernameChanged -> {
-                state = state.copy(signupUsername = event.value)
-            }
-            is AuthUiEvent.SignUpPasswordChanged -> {
-                state = state.copy(signupPassword = event.value)
-            }
-            is AuthUiEvent.SignUp -> {
-                signup()
-            }
-        }
-    }
-
-    private fun signup(){
+    fun signUp(name: String, email: String, password: String) {
         viewModelScope.launch {
-            state = state.copy(isLoading = true)
-            val result = repository.signUp(
-                username = state.signupUsername,
-                password = state.signupUsername
-            )
-            resultChannel.send(result)
-            state = state.copy(isLoading = false)
+            state = AuthState.Loading
+
+            val result = repository.signUp(name, email, password)
+
+            state = when (result) {
+                is AuthResult.Success -> AuthState.Success
+                is AuthResult.Error -> AuthState.Error(result.message)
+            }
         }
     }
 
-    private fun signin(){
+    fun signIn(email: String, password: String) {
         viewModelScope.launch {
-            state = state.copy(isLoading = true)
-            val result = repository.signIn(
-                username = state.signupUsername,
-                password = state.signupUsername
-            )
-            resultChannel.send(result)
-            state = state.copy(isLoading = false)
+            state = AuthState.Loading
+
+            val result = repository.signIn(email, password)
+
+            state = when (result) {
+                is AuthResult.Success -> AuthState.Success
+                is AuthResult.Error -> AuthState.Error(result.message)
+            }
         }
     }
-    private fun authenticate(){
+
+    fun signInWithGoogle(idToken: String) {
         viewModelScope.launch {
-            state = state.copy(isLoading = true)
-            val result = repository.authenticate()
-            resultChannel.send(result)
-            state = state.copy(isLoading = false)
+            state = AuthState.Loading
+
+            val result = repository.signInWithGoogle(idToken)
+
+            state = when (result) {
+                is AuthResult.Success -> AuthState.Success
+                is AuthResult.Error -> AuthState.Error(result.message)
+            }
         }
+    }
+
+    fun getCurrentUser() {
+        val userId = repository.getCurrentUserId()
+        state = if (userId != null) {
+            AuthState.Success
+        } else {
+            AuthState.Idle
+        }
+    }
+
+    fun logout() {
+        repository.logout()
+        state = AuthState.Idle
     }
 }
