@@ -1,16 +1,13 @@
-package com.example.habittracker.data.remote.request
-
-import java.time.LocalDate
+package com.example.habittracker.data.models
 
 data class HabitRequest(
-    val habitId: String,
     val name: String,
     val icon : String,
     val iconBackground: String,
     val description: String,
     val goal : Goal,
     val frequency: Frequency,
-    val startDate: LocalDate,
+    val startDate: Long,
     val isActive: Boolean
 )
 

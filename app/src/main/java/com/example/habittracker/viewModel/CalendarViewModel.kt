@@ -1,6 +1,7 @@
-package com.example.habittracker.data.calander
+package com.example.habittracker.viewModel
 
 import androidx.lifecycle.ViewModel
+import com.example.habittracker.viewModel.WeekData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

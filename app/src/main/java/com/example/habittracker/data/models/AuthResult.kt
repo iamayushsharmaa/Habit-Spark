@@ -1,4 +1,4 @@
-package com.example.habittracker.data.auth
+package com.example.habittracker.data.models
 
 sealed class AuthResult<out T> {
     data class Success<out T>(val data: T) : AuthResult<T>()

@@ -50,10 +50,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracker.common.Res
 import com.example.habittracker.common.Res.icons
-import com.example.habittracker.data.remote.request.Frequency
-import com.example.habittracker.data.remote.request.Goal
-import com.example.habittracker.data.remote.request.HabitRequest
-import com.example.habittracker.data.remote.request.toDisplayString
+import com.example.habittracker.data.models.Frequency
+import com.example.habittracker.data.models.Goal
+import com.example.habittracker.data.models.HabitRequest
+import com.example.habittracker.data.models.toDisplayString
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.example.habittracker.view.navigation.BottomNavItem

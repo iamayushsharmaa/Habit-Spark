@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habittracker.common.ui_states.AuthState
 import com.example.habittracker.data.auth.AuthRepository
-import com.example.habittracker.data.auth.AuthResult
+import com.example.habittracker.data.models.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

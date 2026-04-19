@@ -1,4 +1,4 @@
-package com.example.habittracker.data.auth
+package com.example.habittracker.data.models
 
 data class UserData(
     val userId: String = "",

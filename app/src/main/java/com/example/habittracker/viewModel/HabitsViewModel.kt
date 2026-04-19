@@ -2,78 +2,105 @@ package com.example.habittracker.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.habittracker.data.remote.HabitsRepository
-import com.example.habittracker.data.remote.request.HabitCompletionRequest
-import com.example.habittracker.data.remote.request.HabitRequest
-import com.example.habittracker.data.remote.response.HabitResponse
-import com.example.habittracker.data.remote.response.Resource
-import com.google.api.ResourceProto.resource
+import com.example.habittracker.data.repository.HabitsRepository
+import com.example.habittracker.data.models.HabitRequest
+import com.example.habittracker.data.models.HabitResponse
+import com.example.habittracker.data.models.Resource
+import com.example.habittracker.utils.getTodayTimestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class HabitsViewModel @Inject constructor(
-    private val habitsRepository: HabitsRepository
+    private val repository: HabitsRepository
 ) : ViewModel() {
 
-    private val _habitsUiState = MutableStateFlow<UiState<List<HabitResponse>>>(UiState.Loading())
-    val habitsUiState: StateFlow<UiState<List<HabitResponse>>> = _habitsUiState
+    private var _uiState = MutableStateFlow(HabitsUiState())
+    val uiState: StateFlow<HabitsUiState> = _uiState
 
-
-    fun createHabit(habit: HabitRequest){
-        viewModelScope.launch {
-            habitsRepository.createHabit(habit)
-        }
+    init {
+        observeHabits()
     }
 
-    fun getHabitsByDate(date: LocalDate) {
+
+    private fun observeHabits() {
         viewModelScope.launch {
-            habitsRepository.getHabitsByDate(date)
-                .map { resource ->
-                    when (resource) {
-                        is Resource.Loading -> UiState.Loading()
-                        is Resource.Success -> UiState.Success(resource.data)
-                        is Resource.Error -> UiState.Error(resource.message)
+            repository.getHabits().collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = true,
+                            error = null
+                        )
+                    }
+
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            habits = resource.data,
+                            error = null
+                        )
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = resource.message
+                        )
                     }
                 }
-                .collect { uiState ->
-                    _habitsUiState.value = uiState
-                }
-        }
-    }
-    fun refreshHabits() {
-        viewModelScope.launch {
-            habitsRepository.getHabitsByDate(LocalDate.now())
-                .map { resource ->
-                    when (resource) {
-                        is Resource.Loading -> UiState.Loading()
-                        is Resource.Success -> UiState.Success(resource.data)
-                        is Resource.Error -> UiState.Error(resource.message)
-                    }
-                }
-                .collect { uiState ->
-                    _habitsUiState.value = uiState
-                }
+            }
         }
     }
 
-    fun markHabitAsCompleted(habitId: String, habitCompletionRequest: HabitCompletionRequest) {
+    fun createHabit(habit: HabitRequest) {
         viewModelScope.launch {
-            habitsRepository.updateHabit(habitId, habitCompletionRequest)
+            try {
+                repository.createHabit(habit)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = e.message
+                )
+            }
         }
     }
 
-    fun deletHabit(habitId: String) {
+    fun toggleHabit(habitId: String) {
         viewModelScope.launch {
-            habitsRepository.deleteHabit(habitId)
+            try {
+                val today = getTodayTimestamp()
+                repository.toggleHabitCompletion(habitId, today)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = e.message
+                )
+            }
         }
     }
+
+    fun deleteHabit(habitId: String) {
+        viewModelScope.launch {
+            try {
+                repository.deleteHabit(habitId)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = e.message
+                )
+            }
+        }
+    }
+
+
+    fun getTodaysHabit(): List<HabitResponse> {
+        val today = getTodayTimestamp()
+
+        return _uiState.value.habits.filter {
+            it.startDate <= today && it.isActive
+        }
+    }
+
 
 }

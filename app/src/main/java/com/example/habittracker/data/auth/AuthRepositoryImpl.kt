@@ -1,5 +1,7 @@
 package com.example.habittracker.data.auth
 
+import com.example.habittracker.data.models.AuthResult
+import com.example.habittracker.data.models.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore

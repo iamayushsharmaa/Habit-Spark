@@ -1,5 +1,8 @@
 package com.example.habittracker.data.auth
 
+import com.example.habittracker.data.models.AuthResult
+import com.example.habittracker.data.models.UserData
+
 interface AuthRepository {
 
     suspend fun signUp(name: String, email: String, password: String): AuthResult<Unit>
