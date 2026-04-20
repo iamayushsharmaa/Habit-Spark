@@ -58,7 +58,7 @@ fun Home(
 
     var date by remember { mutableStateOf<LocalDate>(LocalDate.now()) }
 
-    val habits = habitViewModel.getHabitsForSelectedDate()
+    val habits by habitViewModel.habitsForSelectedDates.collectAsState()
 
     val uiState by habitViewModel.uiState.collectAsState()
     val selectedDate by habitViewModel.selectedDate.collectAsState()
@@ -185,7 +185,7 @@ fun Home(
 
                                 val isCompleted = habit.isCompletedOn(selectedDate)
 
-                                val isLocked = selectedDate < today
+                                val isLocked = selectedDate != today
 
                                 HabitStyle(
                                     habit = habit,
@@ -226,13 +226,3 @@ fun ProgressBar(
         )
     }
 }
-//
-//@Preview
-//@Composable
-//private fun Habit() {
-//    Home(
-//        navController = rememberNavController(),
-//        habitViewModel = hiltViewModel()
-//    )
-//}
-

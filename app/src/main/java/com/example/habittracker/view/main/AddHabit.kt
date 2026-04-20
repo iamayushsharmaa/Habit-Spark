@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracker.common.Res
-import com.example.habittracker.common.Res.icons
 import com.example.habittracker.data.models.Frequency
 import com.example.habittracker.data.models.Goal
 import com.example.habittracker.data.models.HabitRequest
@@ -63,7 +62,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.UUID
+import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,24 +82,24 @@ fun AddHabit(
     var expanded by remember { mutableStateOf(false) }
     var selectedFrequency by remember { mutableStateOf(Frequency.EVERYDAY) }
 
-    var selectedColor by remember { mutableStateOf(Res.colorList[0]) }
-    var selectedIcon by remember { mutableStateOf<Int?>(icons[0]) }
+    var selectedIcon by remember { mutableStateOf("fitness") }
+    var selectedColor by remember { mutableStateOf("#FFC107") }
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = AppColor.White)
             .statusBarsPadding()
             .padding(8.dp)
             .verticalScroll(rememberScrollState()),
-    ){
-        Row (
+    ) {
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(55.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
-        ){
+        ) {
             Text(
                 text = "Let's Start a new Habit",
                 color = AppColor.Black,
@@ -121,7 +120,8 @@ fun AddHabit(
                     fontSize = 16.sp,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal
-            ) },
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 15.dp, end = 15.dp),
@@ -158,7 +158,8 @@ fun AddHabit(
                     fontSize = 16.sp,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal
-                ) },
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 15.dp, end = 15.dp),
@@ -186,14 +187,15 @@ fun AddHabit(
         TextForm(text = "Value")
         OutlinedTextField(
             value = value,
-            onValueChange = { value = it},
+            onValueChange = { value = it },
             placeholder = {
                 Text(
                     text = "Enter a Value",
                     fontSize = 16.sp,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal
-            ) },
+                )
+            },
             maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -220,14 +222,15 @@ fun AddHabit(
 
         OutlinedTextField(
             value = unit,
-            onValueChange = { unit = it},
+            onValueChange = { unit = it },
             placeholder = {
                 Text(
                     text = "Enter a unit",
                     fontSize = 16.sp,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal
-                ) },
+                )
+            },
             textStyle = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = poppinsFontFamily,
@@ -259,7 +262,7 @@ fun AddHabit(
         ) {
             OutlinedTextField(
                 value = selectedFrequency.toDisplayString(),
-                onValueChange = { selectedFrequency.toDisplayString()},
+                onValueChange = { selectedFrequency.toDisplayString() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 15.dp, end = 15.dp)
@@ -275,7 +278,7 @@ fun AddHabit(
                 ),
                 trailingIcon = {
                     Icon(
-                        imageVector = if( expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = null
                     )
                 },
@@ -307,7 +310,8 @@ fun AddHabit(
                                 fontFamily = poppinsFontFamily,
                                 fontWeight = FontWeight.Normal,
                                 color = AppColor.Black
-                            ) },
+                            )
+                        },
                         onClick = {
                             selectedFrequency = option
                             expanded = false
@@ -327,11 +331,11 @@ fun AddHabit(
                 .padding(horizontal = 8.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(icons) { iconResId ->
+            items(Res.iconMap.keys.toList()) { iconName ->
                 IconPicker(
-                    iconResId = iconResId,
-                    isIconSelected = iconResId == selectedIcon,
-                    onIconSelected = { selectedIcon = iconResId }
+                    iconName = iconName,
+                    isIconSelected = iconName == selectedIcon,
+                    onIconSelected = { selectedIcon = it }
                 )
             }
         }
@@ -339,17 +343,17 @@ fun AddHabit(
 
         TextForm("Background color")
 
-        LazyRow (
+        LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 15.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
-            items(Res.colorList){ color->
+        ) {
+            items(Res.colorMap.keys.toList()) { hex ->
                 PickColor(
-                    color = color,
-                    isSelected = color == selectedColor,
-                    onClick = { selectedColor = color}
+                    colorHex = hex,
+                    isSelected = hex == selectedColor,
+                    onClick = { selectedColor = hex }
                 )
             }
         }
@@ -357,21 +361,23 @@ fun AddHabit(
         Spacer(Modifier.height(8.dp))
         Button(
             onClick = {
-                val habitRequest = HabitRequest(
-                    habitId = UUID.randomUUID().toString(),
-                    name = habitName,
-                    icon = selectedIcon.toString(),
-                    iconBackground = selectedColor.toString(),
-                    description = description,
-                    goal = Goal(
-                        value = value,
-                        unit = unit
-                    ),
-                    frequency = selectedFrequency,
-                    startDate = LocalDate.now(),
-                    isActive = true
-                )
-                if (habitName.isNotBlank()){
+                if (habitName.isNotBlank()) {
+                    val habitRequest = HabitRequest(
+                        name = habitName,
+                        icon = selectedIcon,
+                        iconBackground = selectedColor,
+                        description = description,
+                        goal = Goal(
+                            value = value,
+                            unit = unit
+                        ),
+                        frequency = selectedFrequency,
+                        startDate = LocalDate.now()
+                            .atStartOfDay(ZoneId.systemDefault())
+                            .toInstant()
+                            .toEpochMilli(),
+                        isActive = true
+                    )
                     CoroutineScope(Dispatchers.Main).launch {
                         try {
                             habitsViewModel.createHabit(habitRequest)
@@ -387,17 +393,18 @@ fun AddHabit(
                             }
                             habitName = ""
                             description = ""
-                            selectedIcon = null
-                            selectedColor = Res.colorList[0]
+                            selectedIcon = "fitness"
+                            selectedColor = "#FFC107"
                             selectedFrequency = Frequency.EVERYDAY
                         } catch (e: Exception) {
                             Toast.makeText(context, "Failed to create habit", Toast.LENGTH_SHORT)
                                 .show()
                         }
                     }
-                }else{
+                } else {
                     Toast.makeText(context, "Please enter a habit name", Toast.LENGTH_SHORT).show()
-                } },
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(66.dp)
@@ -435,10 +442,13 @@ fun TextForm(text: String) {
 @Composable
 fun PickColor(
     modifier: Modifier = Modifier,
-    color: Color,
+    colorHex: String,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+
+    val color = Color(android.graphics.Color.parseColor(colorHex))
+
     Box(
         modifier = Modifier
             .size(40.dp)
@@ -455,15 +465,15 @@ fun PickColor(
 
 @Composable
 fun IconPicker(
-    iconResId: Int,
+    iconName: String,
     isIconSelected: Boolean,
-    onIconSelected: (Int) -> Unit,
+    onIconSelected: (String) -> Unit,
 ) {
-    Box (
+    Box(
         modifier = Modifier
             .size(50.dp)
             .background(AppColor.WhiteFade, RoundedCornerShape(10.dp))
-            .clickable { onIconSelected(iconResId) }
+            .clickable { onIconSelected(iconName) }
             .border(
                 width = 2.dp,
                 color = if (isIconSelected) Color.Black else Color.Transparent,
@@ -472,8 +482,8 @@ fun IconPicker(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            painter = painterResource(id = iconResId),
-            contentDescription = "Icon",
+            painter = painterResource(id = Res.toResId(iconName)),
+            contentDescription = iconName,
             modifier = Modifier.size(26.dp)
         )
     }

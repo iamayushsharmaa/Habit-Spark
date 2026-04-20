@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -27,6 +28,20 @@ class HabitsViewModel @Inject constructor(
 
     private val _selectedDate = MutableStateFlow(getTodayTimestamp())
     val selectedDate: StateFlow<Long> = _selectedDate
+
+    val habitsForSelectedDates: StateFlow<List<HabitResponse>> =
+        combine(_uiState, _selectedDate) { state, selected ->
+            state.habits.filter {
+                it.startDate <= selected && it.isActive
+            }
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+
+
 
     val globalStreak: StateFlow<Int> = _uiState
         .map { state ->
@@ -148,14 +163,6 @@ class HabitsViewModel @Inject constructor(
         }
     }
 
-
-    fun getHabitsForSelectedDate(): List<HabitResponse> {
-        val selected = _selectedDate.value
-
-        return _uiState.value.habits.filter {
-            it.startDate <= selected && it.isActive
-        }
-    }
 
     fun onDateSelected(date: Long) {
         _selectedDate.value = date
