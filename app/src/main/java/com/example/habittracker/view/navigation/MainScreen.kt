@@ -17,7 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.habittracker.view.main.AddHabit
-import com.example.habittracker.view.main.BottomNavBar
+import com.example.habittracker.view.main.component.BottomNavBar
 import com.example.habittracker.view.main.Home
 import com.example.habittracker.view.main.Profile
 import kotlinx.coroutines.CoroutineExceptionHandler

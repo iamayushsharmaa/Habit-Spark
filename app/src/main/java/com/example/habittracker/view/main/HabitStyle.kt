@@ -37,16 +37,18 @@ import com.example.habittracker.ui.theme.poppinsFontFamily
 @Composable
 fun HabitStyle(
     habit: HabitResponse,
+    isCompleted: Boolean,
+    isLocked: Boolean,
     onClick: () -> Unit
 ) {
 
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(70.dp)
             .background(shape = RoundedCornerShape(12.dp), color = AppColor.WhiteFade)
-            .clickable { onClick() },
-    ){
+            .clickable(enabled = !isLocked) { onClick() },
+    ) {
         Spacer(Modifier.width(8.dp))
         Box(
             modifier = Modifier
@@ -54,7 +56,7 @@ fun HabitStyle(
                 .align(Alignment.CenterVertically)
                 .background(shape = RoundedCornerShape(12.dp), color = AppColor.Blue),
             contentAlignment = Alignment.Center,
-        ){
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.fitness),
                 contentDescription = "Habit Icon",
@@ -67,12 +69,12 @@ fun HabitStyle(
 
         Spacer(Modifier.width(12.dp))
 
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(100.dp)
                 .padding(vertical = 9.dp)
-        ){
+        ) {
             Text(
                 text = habit.name,
                 fontFamily = poppinsFontFamily,
@@ -85,11 +87,22 @@ fun HabitStyle(
                 modifier = Modifier
                     .wrapContentSize()
                     .padding(vertical = 3.dp)
-                    .background(shape = RoundedCornerShape(4.dp), color = AppColor.Orange),
+                    .background(
+                        shape = RoundedCornerShape(4.dp),
+                        color = when {
+                            isLocked -> AppColor.Gray
+                            isCompleted -> AppColor.Green
+                            else -> AppColor.Orange
+                        }
+                    ),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 Text(
-                    text = if (habit.isCompleted) "Done" else "Active",
+                    text = when {
+                        isLocked -> "Locked"
+                        isCompleted -> "Done"
+                        else -> "Active"
+                    },
                     fontFamily = poppinsFontFamily,
                     fontSize = 12.sp,
                     color = AppColor.Black,
@@ -106,15 +119,15 @@ fun HabitStyle(
             modifier = Modifier
                 .padding(vertical = 10.dp)
         )
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(60.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             Text(
-                text = habit.value,
+                text = habit.goal.value,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 21.sp,
@@ -122,7 +135,7 @@ fun HabitStyle(
                 color = AppColor.Black
             )
             Text(
-                text = habit.unit,
+                text = habit.goal.unit,
                 color = AppColor.BlackFade,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,

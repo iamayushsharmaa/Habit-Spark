@@ -8,29 +8,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.habittracker.viewModel.CalendarViewModel
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
+import com.example.habittracker.viewModel.CalendarViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -43,11 +38,14 @@ fun WeekCalendarScreen(
 ) {
     val currentDate = viewModel.currentDate.collectAsState().value
     val selectedDate = viewModel.selectedDate.collectAsState().value
-    val pagerState = rememberPagerState(initialPage = Int.MAX_VALUE / 2)
+
+    val pagerState = rememberPagerState(initialPage = 2, pageCount = { 5 })
+
+    val weekOffset = pagerState.currentPage - 2
 
     Column(modifier = modifier) {
         Text(
-            text = viewModel.getWeekDates(pagerState.currentPage - Int.MAX_VALUE / 2).monthName,
+            text = viewModel.getWeekDates(weekOffset).monthName,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
@@ -55,11 +53,10 @@ fun WeekCalendarScreen(
         )
 
         HorizontalPager(
-            count = Int.MAX_VALUE,
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
-            val weekData = viewModel.getWeekDates(page - Int.MAX_VALUE / 2)
+            val weekData = viewModel.getWeekDates(page - 2)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -92,7 +89,7 @@ fun CalendarStyle(
     date: String,
     isSelectedDate: Boolean,
     isCurrentDate: Boolean,
-    onDateClicked : () -> Unit
+    onDateClicked: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -106,7 +103,7 @@ fun CalendarStyle(
                 isCurrentDate -> AppColor.Black
                 else -> AppColor.WhiteFade
             },
-            contentColor =  when {
+            contentColor = when {
                 isSelectedDate -> AppColor.White
                 isCurrentDate -> AppColor.White
                 else -> AppColor.Black

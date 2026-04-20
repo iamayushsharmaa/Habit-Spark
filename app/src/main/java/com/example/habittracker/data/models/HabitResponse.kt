@@ -21,10 +21,8 @@ data class HabitCompletion(
     val isCompleted: Boolean
 )
 
-fun HabitResponse.isCompletedToday(): Boolean {
-    val today = getTodayTimestamp()
-
+fun HabitResponse.isCompletedOn(date: Long): Boolean {
     return completionHistory.any {
-        it.date == today && it.isCompleted
+        it.date == date && it.isCompleted
     }
 }

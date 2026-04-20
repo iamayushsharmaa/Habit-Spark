@@ -37,15 +37,17 @@ import com.example.habittracker.ui.theme.poppinsFontFamily
 @Composable
 fun HabitDetailSheet(
     habit: HabitResponse,
-    onDismissRequest:() -> Unit,
-    onDeleteClick:() -> Unit,
-    onCompleteClick:() -> Unit
+    isCompleted: Boolean,
+    isLocked: Boolean,
+    onDismissRequest: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onCompleteClick: () -> Unit
 ) {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = AppColor.White),
-    ){
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -54,7 +56,7 @@ fun HabitDetailSheet(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = {onDeleteClick()},
+                onClick = { onDeleteClick() },
                 modifier = Modifier
                     .padding(horizontal = 2.dp)
                     .background(shape = RoundedCornerShape(14.dp), color = AppColor.WhiteFade),
@@ -72,15 +74,33 @@ fun HabitDetailSheet(
                 )
             }
             Spacer(Modifier.weight(1f))
-            Text(
-                text = habit.name,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 25.sp,
-                modifier = Modifier
-                    .wrapContentWidth(),
-                textAlign = TextAlign.Center
-            )
+
+            Column(
+                modifier = Modifier.wrapContentWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = habit.name,
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 25.sp,
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = when {
+                        isLocked -> "Locked"
+                        isCompleted -> "Completed"
+                        else -> "Pending"
+                    },
+                    color = when {
+                        isLocked -> AppColor.Gray
+                        isCompleted -> AppColor.Green
+                        else -> AppColor.Orange
+                    },
+                    fontSize = 14.sp
+                )
+            }
 
             Spacer(Modifier.weight(1f))
 
@@ -128,7 +148,7 @@ fun HabitDetailSheet(
         )
 
         OutlinedTextField(
-            value = "${habit.value} ${habit.unit}",
+            value = "${habit.goal.value} ${habit.goal.unit}",
             onValueChange = {},
             modifier = Modifier
                 .fillMaxWidth()
@@ -165,7 +185,11 @@ fun HabitDetailSheet(
         )
         Spacer(Modifier.weight(1f))
         Button(
-            onClick = { onCompleteClick() },
+            onClick = {
+                if (!isLocked) {
+                    onCompleteClick()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
@@ -177,7 +201,11 @@ fun HabitDetailSheet(
             )
         ) {
             Text(
-                text = "Finish",
+                text = when {
+                    isLocked -> "Locked"
+                    isCompleted -> "Completed"
+                    else -> "Finish"
+                },
                 fontFamily = poppinsFontFamily,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Normal
@@ -188,14 +216,14 @@ fun HabitDetailSheet(
 }
 
 @Composable
-fun BoxDesign(text : String) {
+fun BoxDesign(text: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(horizontal = 14.dp, vertical = 3.dp)
             .background(shape = RoundedCornerShape(16.dp), color = AppColor.WhiteFade)
-    ){
+    ) {
         Text(
             text = text,
             modifier = Modifier
