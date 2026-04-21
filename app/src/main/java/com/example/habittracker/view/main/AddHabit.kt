@@ -20,9 +20,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -63,12 +60,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddHabit(
     habitsViewModel: HabitsViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel(),
     navController: NavController
 ) {
 
@@ -89,7 +88,6 @@ fun AddHabit(
         modifier = Modifier
             .fillMaxSize()
             .background(color = AppColor.White)
-            .statusBarsPadding()
             .padding(8.dp)
             .verticalScroll(rememberScrollState()),
     ) {

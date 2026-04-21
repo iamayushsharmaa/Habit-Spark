@@ -32,7 +32,10 @@ fun HabitTheme(
     val colors = if (darkTheme) DarkColors else LightColors
 
     MaterialTheme(
-        colorScheme = colors,
+        colorScheme = lightColorScheme(
+            background = Color.White,
+            surface = Color.White,
+        ),
         typography = Typography,
         content = content
     )

@@ -12,14 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,161 +45,155 @@ import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.example.habittracker.utils.getTodayTimestamp
 import com.example.habittracker.viewModel.HabitsViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
     navController: NavController,
     habitViewModel: HabitsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val currentDate = LocalDate.now()
-    val startDate = currentDate.minusMonths(11)
 
-    var date by remember { mutableStateOf<LocalDate>(LocalDate.now()) }
+    val userName = FirebaseAuth.getInstance().currentUser?.displayName ?: "Hey there"
 
     val habits by habitViewModel.habitsForSelectedDates.collectAsState()
-
     val uiState by habitViewModel.uiState.collectAsState()
     val selectedDate by habitViewModel.selectedDate.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
-    val modalBottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
+    var selectedHabit by remember { mutableStateOf<HabitResponse?>(null) }
+    var showSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
     )
 
-    var selectedHabit by remember { mutableStateOf<HabitResponse?>(null) }
+    val today = getTodayTimestamp()
 
-    ModalBottomSheetLayout(
-        sheetState = modalBottomSheetState,
-        sheetContent = {
-            selectedHabit?.let {
-                HabitDetailSheet(
-                    habit = it,
-                    isCompleted = it.isCompletedOn(selectedDate),
-                    isLocked = selectedDate < getTodayTimestamp(),
-                    onDismissRequest = {
-                        coroutineScope.launch {
-                            modalBottomSheetState.hide()
-                        }
-                    },
-                    onDeleteClick = {
-                        coroutineScope.launch {
-                            habitViewModel.deleteHabit(it.habitId)
-                            modalBottomSheetState.hide()
-                        }
-                    },
-                    onCompleteClick = {
-                        coroutineScope.launch {
-                            habitViewModel.toggleHabit(it.habitId)
-                            modalBottomSheetState.hide()
-                        }
-                    }
+    if (showSheet && selectedHabit != null) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showSheet = false
+                selectedHabit = null
+            },
+            sheetState = sheetState,
+            containerColor = AppColor.White,
+            dragHandle = {
+                Box(
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .width(50.dp)
+                        .height(4.dp)
+                        .background(
+                            color = Color.Gray.copy(alpha = 0.4f),
+                            shape = RoundedCornerShape(2.dp)
+                        )
                 )
             }
+        ) {
+            HabitDetailSheet(
+                habit = selectedHabit!!,
+                isCompleted = selectedHabit!!.isCompletedOn(selectedDate),
+                isLocked = selectedDate < today,
+                onDismissRequest = {
+                    showSheet = false
+                    selectedHabit = null
+                },
+                onDeleteClick = {
+                    coroutineScope.launch {
+                        habitViewModel.deleteHabit(selectedHabit!!.habitId)
+                        showSheet = false
+                        selectedHabit = null
+                    }
+                },
+                onCompleteClick = {
+                    coroutineScope.launch {
+                        habitViewModel.toggleHabit(selectedHabit!!.habitId)
+                        showSheet = false
+                        selectedHabit = null
+                    }
+                }
+            )
         }
+    }
+
+    Column(
+        modifier = Modifier
+            .background(color = AppColor.White)
+            .fillMaxSize()
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = userName,
+                fontSize = 24.sp,
+                color = AppColor.Black,
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.Black,
+                modifier = Modifier.padding(start = 15.dp, top = 15.dp)
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        WeekCalendarScreen(
+            modifier = Modifier.padding(start = 4.dp),
+            onDateClicked = { }
+        )
+
         Column(
             modifier = Modifier
-                .background(color = AppColor.White)
                 .fillMaxSize()
-                .statusBarsPadding()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Ayush",
-                    fontSize = 30.sp,
-                    color = AppColor.Black,
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.Black,
-                    modifier = Modifier.padding(start = 15.dp, top = 15.dp)
-                )
-            }
+            when {
+                uiState.isLoading -> {
+                    ProgressBar(modifier = Modifier.align(CenterHorizontally))
+                }
 
-            Spacer(Modifier.height(8.dp))
+                uiState.error != null -> {
+                    Text(
+                        text = "You have no habits at the moment",
+                        fontSize = 16.sp,
+                        color = AppColor.Black,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier
+                            .padding(start = 15.dp, top = 15.dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
+                }
 
-            TrackerLayout(
-                startDate = startDate,
-                currentDate = currentDate,
-            )
+                habits.isEmpty() -> {
+                    Text(
+                        text = "Add new Habits",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-            WeekCalendarScreen(
-                modifier = Modifier
-                    .padding(start = 4.dp),
-                onDateClicked = { }
-            )
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = CenterHorizontally
-            ) {
-                when {
-                    uiState.isLoading -> {
-                        ProgressBar(
-                            modifier = Modifier
-                                .align(CenterHorizontally)
-                        )
-                    }
-
-                    uiState.error != null -> {
-                        Text(
-                            text = "You have no habits at the moment",
-                            fontSize = 16.sp,
-                            color = AppColor.Black,
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier
-                                .padding(start = 15.dp, top = 15.dp)
-                                .fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                        Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    }
-
-                    habits.isEmpty() -> {
-                        Text(
-                            text = "Add new Habits",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    else -> {
-                        val today = getTodayTimestamp()
-
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            items(habits) { habit ->
-
-                                val isCompleted = habit.isCompletedOn(selectedDate)
-
-                                val isLocked = selectedDate != today
-
-                                HabitStyle(
-                                    habit = habit,
-                                    isCompleted = isCompleted,
-                                    isLocked = isLocked,
-                                    onClick = {
-                                        selectedHabit = habit
-                                        coroutineScope.launch {
-                                            modalBottomSheetState.show()
-                                        }
-                                    }
-                                )
-                            }
+                else -> {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(habits) { habit ->
+                            HabitStyle(
+                                habit = habit,
+                                isCompleted = habit.isCompletedOn(selectedDate),
+                                isLocked = selectedDate < today,
+                                onClick = {
+                                    selectedHabit = habit
+                                    showSheet = true
+                                }
+                            )
                         }
                     }
                 }
@@ -206,6 +201,7 @@ fun Home(
         }
     }
 }
+
 
 @Composable
 fun ProgressBar(

@@ -5,7 +5,7 @@ package com.example.habittracker.view.navigation
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Scaffold
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -17,9 +17,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.habittracker.view.main.AddHabit
-import com.example.habittracker.view.main.component.BottomNavBar
 import com.example.habittracker.view.main.Home
 import com.example.habittracker.view.main.Profile
+import com.example.habittracker.view.main.component.BottomNavBar
 import kotlinx.coroutines.CoroutineExceptionHandler
 
 

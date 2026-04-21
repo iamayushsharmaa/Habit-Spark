@@ -1,5 +1,6 @@
 package com.example.habittracker.view.main
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.habittracker.R
+import com.example.habittracker.common.Res
 import com.example.habittracker.data.models.HabitResponse
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
@@ -46,19 +49,20 @@ fun HabitDetailSheet(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(horizontal = 14.dp, vertical = 10.dp)
             .background(color = AppColor.White),
     ) {
+        Spacer(modifier = Modifier.height(20.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
                 onClick = { onDeleteClick() },
                 modifier = Modifier
-                    .padding(horizontal = 2.dp)
+                    .size(44.dp)
                     .background(shape = RoundedCornerShape(14.dp), color = AppColor.WhiteFade),
                 colors = IconButtonDefaults.iconButtonColors(
                     contentColor = AppColor.RedBrown,
@@ -76,15 +80,40 @@ fun HabitDetailSheet(
             Spacer(Modifier.weight(1f))
 
             Column(
-                modifier = Modifier.wrapContentWidth(),
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .padding(vertical = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .background(
+                            color = Res.toColor(habit.iconBackground),
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = Res.toResId(habit.icon)),
+                        contentDescription = habit.name,
+                        tint = AppColor.Black,
+                        modifier = Modifier
+                            .size(28.dp)
+                    )
+                }
+
+                Spacer(Modifier.height(4.dp))
+
                 Text(
                     text = habit.name,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 25.sp,
-                    textAlign = TextAlign.Center
+                    fontSize = 20.sp,
+                    color = AppColor.Black,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1
                 )
 
                 Text(
@@ -101,12 +130,11 @@ fun HabitDetailSheet(
                     fontSize = 14.sp
                 )
             }
-
             Spacer(Modifier.weight(1f))
 
             IconButton(
                 modifier = Modifier
-                    .padding(horizontal = 2.dp)
+                    .size(44.dp)
                     .background(shape = RoundedCornerShape(14.dp), color = AppColor.WhiteFade),
                 colors = IconButtonDefaults.iconButtonColors(
                     contentColor = AppColor.Black,
@@ -124,24 +152,16 @@ fun HabitDetailSheet(
             }
         }
 
-        // graph tracck
+        // graph track
 
         Spacer(Modifier.height(20.dp))
-        Text(
-            text = habit.description,
-            fontFamily = poppinsFontFamily,
-            fontWeight = FontWeight.Normal,
-            fontSize = 15.sp,
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 5.dp)
-        )
-
-        BoxDesign(text = "Description is here and if you want to change it you can from here and update it")
+        BoxDesign(text = habit.description)
 
         Text(
             text = "Target",
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Normal,
+            color = AppColor.Black,
             fontSize = 15.sp,
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 5.dp)
@@ -164,7 +184,7 @@ fun HabitDetailSheet(
             shape = RoundedCornerShape(14.dp),
             leadingIcon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.fitness),
+                    painter = painterResource(id = Res.toResId(habit.icon)),
                     contentDescription = "habit icon",
                     tint = AppColor.Black
                 )
@@ -196,14 +216,16 @@ fun HabitDetailSheet(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(
-                contentColor = AppColor.White,
-                containerColor = AppColor.Black
-            )
-        ) {
+                contentColor = if (isCompleted) AppColor.Black else AppColor.White,
+                containerColor = if (isCompleted) AppColor.WhiteFade else AppColor.Black
+            ),
+            border = if (isCompleted) BorderStroke(1.dp, AppColor.BlackFade) else null,
+
+            ) {
             Text(
                 text = when {
                     isLocked -> "Locked"
-                    isCompleted -> "Completed"
+                    isCompleted -> "Mark Incomplete"
                     else -> "Finish"
                 },
                 fontFamily = poppinsFontFamily,
@@ -232,19 +254,9 @@ fun BoxDesign(text: String) {
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
+            color = AppColor.Black,
             textAlign = TextAlign.Center,
             softWrap = true
         )
     }
 }
-
-//@Preview
-//@Composable
-//private fun DetailPrev() {
-//    HabitDetailSheet(
-//        habit = HabitResponse(),
-//        onDismissRequest = {},
-//        onDeleteClick = {},
-//        onCompleteClick = { }
-//    )
-//}

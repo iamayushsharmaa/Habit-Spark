@@ -1,5 +1,7 @@
 package com.example.habittracker.data.models
 
+import com.google.firebase.firestore.PropertyName
+
 data class HabitDto(
     val habitId: String = "",
     val name: String = "",
@@ -9,8 +11,14 @@ data class HabitDto(
     val goal: GoalDto = GoalDto(),
     val frequency: String = "",
     val startDate: Long = 0L,
-    val isActive: Boolean = true,
-    val isLocked: Boolean = false,
+
+    @get:PropertyName("active")
+    @set:PropertyName("active")
+    var isActive: Boolean = true,
+
+    @get:PropertyName("locked")
+    @set:PropertyName("locked")
+    var isLocked: Boolean = false,
     val completionHistory: List<HabitCompletionDto> = emptyList()
 )
 
@@ -21,5 +29,9 @@ data class GoalDto(
 
 data class HabitCompletionDto(
     val date: Long = 0L,
-    val isCompleted: Boolean = false
+
+    @get:PropertyName("completed")
+    @set:PropertyName("completed")
+    var isCompleted: Boolean = false
+
 )

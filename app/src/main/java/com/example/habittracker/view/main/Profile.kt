@@ -65,7 +65,6 @@ fun Profile(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .padding(8.dp)
     ) {
         Row (
