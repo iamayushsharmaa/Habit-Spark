@@ -1,7 +1,5 @@
 package com.example.habittracker.view.navigation
 
-
-//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.padding
@@ -21,7 +19,6 @@ import com.example.habittracker.view.main.Home
 import com.example.habittracker.view.main.Profile
 import com.example.habittracker.view.main.component.BottomNavBar
 import kotlinx.coroutines.CoroutineExceptionHandler
-
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable

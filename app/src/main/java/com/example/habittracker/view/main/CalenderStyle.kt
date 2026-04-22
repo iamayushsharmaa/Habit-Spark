@@ -1,12 +1,17 @@
 package com.example.habittracker.view.main
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -42,6 +47,7 @@ fun WeekCalendarScreen(
     val pagerState = rememberPagerState(initialPage = 2, pageCount = { 5 })
 
     val weekOffset = pagerState.currentPage - 2
+
 
     Column(modifier = modifier) {
         Text(
@@ -91,31 +97,35 @@ fun CalendarStyle(
     isCurrentDate: Boolean,
     onDateClicked: () -> Unit
 ) {
+    val isBoth = isSelectedDate && isCurrentDate
+
     Card(
         modifier = Modifier
             .height(62.dp)
-            .width(48.dp),
+            .width(48.dp)
+            .then(
+                if (isCurrentDate && !isSelectedDate)
+                    Modifier.border(1.5.dp, AppColor.Black, RoundedCornerShape(10.dp))
+                else Modifier
+            ),
         onClick = { onDateClicked() },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
             containerColor = when {
                 isSelectedDate -> AppColor.Black
-                isCurrentDate -> AppColor.Black
                 else -> AppColor.WhiteFade
             },
             contentColor = when {
                 isSelectedDate -> AppColor.White
-                isCurrentDate -> AppColor.White
                 else -> AppColor.Black
             }
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
+            defaultElevation = if (isSelectedDate) 6.dp else 0.dp
         )
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -132,6 +142,18 @@ fun CalendarStyle(
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
             )
+
+            if (isCurrentDate) {
+                Spacer(Modifier.height(2.dp))
+                Box(
+                    modifier = Modifier
+                        .size(4.dp)
+                        .background(
+                            color = if (isSelectedDate) AppColor.White else AppColor.Black,
+                            shape = RoundedCornerShape(2.dp)
+                        )
+                )
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import com.example.habittracker.data.models.AuthResult
 import com.example.habittracker.data.models.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -120,6 +121,27 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun logout() {
         firebaseAuth.signOut()
+    }
+
+
+    override suspend fun updateDisplayName(name: String): AuthResult<Unit> {
+        return try {
+            val profileUpdate = UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build()
+            firebaseAuth.currentUser?.updateProfile(profileUpdate)?.await()
+            AuthResult.Success(Unit)
+        } catch (e: Exception) {
+            AuthResult.Error(e.message ?: "Failed to update name")
+        }
+    }
+
+    override fun getCurrentUserName(): String {
+        return firebaseAuth.currentUser?.displayName ?: ""
+    }
+
+    override fun getCurrentUserEmail(): String {
+        return firebaseAuth.currentUser?.email ?: ""
     }
 
 }

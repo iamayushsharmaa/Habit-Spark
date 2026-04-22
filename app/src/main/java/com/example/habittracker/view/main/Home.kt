@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -44,6 +45,9 @@ import com.example.habittracker.data.models.isCompletedOn
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.example.habittracker.utils.getTodayTimestamp
+import com.example.habittracker.utils.toTimestamp
+import com.example.habittracker.view.main.component.GlobalStreakBanner
+import com.example.habittracker.view.main.component.HabitStyle
 import com.example.habittracker.viewModel.HabitsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -57,6 +61,8 @@ fun Home(
     val context = LocalContext.current
 
     val userName = FirebaseAuth.getInstance().currentUser?.displayName ?: "Hey there"
+    val globalStreak by habitViewModel.globalStreak.collectAsState()
+
 
     val habits by habitViewModel.habitsForSelectedDates.collectAsState()
     val uiState by habitViewModel.uiState.collectAsState()
@@ -121,7 +127,7 @@ fun Home(
 
     Column(
         modifier = Modifier
-            .background(color = AppColor.White)
+            .background(color = MaterialTheme.colorScheme.background)
             .fillMaxSize()
     ) {
         Row(
@@ -131,11 +137,11 @@ fun Home(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = userName,
-                fontSize = 24.sp,
-                color = AppColor.Black,
+                text = "Hey! $userName",
+                fontSize = 22.sp,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Black,
+                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(start = 15.dp, top = 15.dp)
             )
         }
@@ -144,8 +150,13 @@ fun Home(
 
         WeekCalendarScreen(
             modifier = Modifier.padding(start = 4.dp),
-            onDateClicked = { }
+            onDateClicked = { localDate ->
+                habitViewModel.onDateSelected(localDate.toTimestamp())
+            }
         )
+
+        Spacer(Modifier.height(10.dp))
+        GlobalStreakBanner(streak = globalStreak)
 
         Column(
             modifier = Modifier
@@ -163,7 +174,7 @@ fun Home(
                     Text(
                         text = "You have no habits at the moment",
                         fontSize = 16.sp,
-                        color = AppColor.Black,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier
@@ -177,6 +188,7 @@ fun Home(
                 habits.isEmpty() -> {
                     Text(
                         text = "Add new Habits",
+                        color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -185,10 +197,13 @@ fun Home(
                 else -> {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(habits) { habit ->
+                            val streak by habitViewModel.habitStreakFlow(habitId = habit.habitId)
+                                .collectAsState()
                             HabitStyle(
                                 habit = habit,
                                 isCompleted = habit.isCompletedOn(selectedDate),
                                 isLocked = selectedDate < today,
+                                streak = streak,
                                 onClick = {
                                     selectedHabit = habit
                                     showSheet = true

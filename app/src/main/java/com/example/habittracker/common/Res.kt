@@ -12,6 +12,10 @@ object Res{
     val profileIconBlank = R.drawable.user_blank
     val profileIconFilled = R.drawable.user_filled
 
+    val fireIcon = R.drawable.fire_icon
+    val sun = R.drawable.sun
+    val moon = R.drawable.moon_icon
+
     val icons = listOf(
         R.drawable.fitness,
         R.drawable.health,

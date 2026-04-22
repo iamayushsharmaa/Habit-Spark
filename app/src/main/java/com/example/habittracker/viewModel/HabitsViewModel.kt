@@ -163,7 +163,6 @@ class HabitsViewModel @Inject constructor(
         }
     }
 
-
     fun onDateSelected(date: Long) {
         _selectedDate.value = date
     }

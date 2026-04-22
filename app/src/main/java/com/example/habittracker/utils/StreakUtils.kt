@@ -98,7 +98,7 @@ object StreakUtils {
         var current = 1
 
         for (i in 1 until sorted.size) {
-            if (sorted[i - 1].plusDays(1) == sorted[1]) {
+            if (sorted[i - 1].plusDays(1) == sorted[i]) {
                 current++
                 longest = maxOf(longest, current)
             } else {

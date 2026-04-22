@@ -6,22 +6,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 
-private val LightColors = lightColorScheme(
-    primary = AppColor.Black,
-    onPrimary = Color.White,
-    secondary = AppColor.WhiteFade,
+private val LightColorsScheme = lightColorScheme(
     background = AppColor.White,
     surface = AppColor.White,
+    onBackground = AppColor.Black,
+    onSurface = AppColor.Black,
+    surfaceVariant = AppColor.WhiteFade,
+    onSurfaceVariant = AppColor.BlackFade
 )
 
-private val DarkColors = darkColorScheme(
-    primary = AppColor.White,
-    onPrimary = Color.White,
-    secondary = AppColor.BlackFade,
-    background = AppColor.Black,
-    surface = AppColor.Black,
+private val DarkColorsScheme = darkColorScheme(
+    background = AppColor.DarkBackground,
+    surface = AppColor.DarkSurface,
+    onBackground = AppColor.White,
+    onSurface = AppColor.White,
+    surfaceVariant = AppColor.DarkWhiteFade,
+    onSurfaceVariant = AppColor.DarkBlackFade
 )
 
 @Composable
@@ -29,14 +30,10 @@ fun HabitTheme(
     darkTheme: Boolean = isSystemInDarkTheme(), // Use system dark mode setting by default
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) DarkColors else LightColors
+    val colorScheme = if (darkTheme) DarkColorsScheme else LightColorsScheme
 
     MaterialTheme(
-        colorScheme = lightColorScheme(
-            background = Color.White,
-            surface = Color.White,
-        ),
-        typography = Typography,
+        colorScheme = colorScheme,
         content = content
     )
 }

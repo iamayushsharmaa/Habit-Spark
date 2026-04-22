@@ -1,6 +1,6 @@
 @file:Suppress("UNREACHABLE_CODE")
 
-package com.example.habittracker.view.main
+package com.example.habittracker.view.main.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,11 +18,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +40,7 @@ fun HabitStyle(
     habit: HabitResponse,
     isCompleted: Boolean,
     isLocked: Boolean,
+    streak: Int,
     onClick: () -> Unit
 ) {
     Row(
@@ -45,13 +48,16 @@ fun HabitStyle(
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .height(70.dp)
-            .background(shape = RoundedCornerShape(14.dp), color = AppColor.WhiteFade)
+            .background(
+                shape = RoundedCornerShape(14.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant
+            )
             .clickable(enabled = !isLocked) { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(Modifier.width(10.dp))
 
-        // ✅ Dynamic icon + background
+
         Box(
             modifier = Modifier
                 .size(46.dp)
@@ -64,14 +70,13 @@ fun HabitStyle(
             Icon(
                 painter = painterResource(id = Res.toResId(habit.icon)),
                 contentDescription = habit.name,
-                tint = AppColor.White,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .size(26.dp)
             )
         }
 
         Spacer(Modifier.width(12.dp))
-
 
         Column(
             modifier = Modifier
@@ -84,7 +89,7 @@ fun HabitStyle(
                 fontFamily = poppinsFontFamily,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = AppColor.Black,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1
             )
             Spacer(Modifier.height(3.dp))
@@ -122,7 +127,7 @@ fun HabitStyle(
 
         VerticalDivider(
             modifier = Modifier.padding(vertical = 12.dp),
-            color = AppColor.BlackFade.copy(alpha = 0.2f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
         )
 
         Column(
@@ -132,24 +137,39 @@ fun HabitStyle(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = habit.goal.value,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center,
-                color = AppColor.Black
-            )
-            Text(
-                text = habit.goal.unit,
-                color = AppColor.BlackFade,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 11.sp,
-                textAlign = TextAlign.Center
-            )
+            if (streak > 0) {
+                Icon(
+                    painter = painterResource(id = Res.fireIcon),
+                    contentDescription = "streak",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = "${streak}d",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp,
+                    color = AppColor.StreakColor
+                )
+            } else {
+                Text(
+                    text = habit.goal.value,
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = habit.goal.unit,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 11.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
-
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(4.dp))
     }
 }

@@ -1,8 +1,10 @@
 package com.example.habittracker.view.main
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,21 +13,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -41,238 +42,273 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.habittracker.R
+import com.example.habittracker.common.Res
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
+import com.example.habittracker.viewModel.AuthViewModel
+import com.example.habittracker.viewModel.ThemeViewModel
 
 @Composable
 fun Profile(
-    navController: NavHostController
+    navController: NavHostController,
+    authViewModel: AuthViewModel = hiltViewModel(),
+    themeViewModel: ThemeViewModel = hiltViewModel()
 ) {
+
     val context = LocalContext.current
-    var name by remember { mutableStateOf("Ayush Sharma") }
-    var email by remember { mutableStateOf("ayushs9468@gmail.com") }
-    var phoneNumber by remember { mutableStateOf("000000000") }
-    var password by remember { mutableStateOf("xyuuuu") }
+
+    var name by remember { mutableStateOf(authViewModel.userName) }
+    val email = authViewModel.userEmail
+
+    val isDark by themeViewModel.isDarkTheme.collectAsState()
+
     var isEditable by remember { mutableStateOf(false) }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 16.dp)
     ) {
-        Row (
+        Spacer(modifier = Modifier.height(8.dp))
+
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp),
+                .height(56.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
             Text(
                 text = "Profile",
-                fontSize = 30.sp,
+                fontSize = 28.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
+                color = AppColor.Black,
             )
-            if (!isEditable){
-                IconButton (
-                    onClick = { isEditable = !isEditable },
+            Row(
+                modifier = Modifier
+                    .height(56.dp),
+            ) {
+                if (!isEditable) {
+                    IconButton(
+                        onClick = { isEditable = true },
+                        modifier = Modifier
+                            .background(
+                                shape = RoundedCornerShape(10.dp),
+                                color = AppColor.WhiteFade
+                            )
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Edit",
+                            tint = AppColor.Black,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
+                Spacer(Modifier.width(8.dp))
+
+                IconButton(
+                    onClick = { themeViewModel.toggleTheme() },
                     modifier = Modifier
-                        .background(shape = RoundedCornerShape(10.dp), color = AppColor.WhiteFade)
+                        .background(
+                            shape = RoundedCornerShape(10.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant
+                        )
                 ) {
                     Icon(
-                        Icons.Default.Edit,
-                        contentDescription = "Edit",
-                        tint = AppColor.Black,
-                        modifier = Modifier.size(30.dp)
+                        painter = painterResource(
+                            id = if (isDark) Res.sun else Res.moon
+                        ),
+                        contentDescription = "Toggle theme",
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
 
         }
-        Spacer(modifier = Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        TextForm("Name")
-        OutlinedTextField(
-            value = name,
-            onValueChange = { if (isEditable) name = it },
-            placeholder = { Text("Name") },
-            enabled = isEditable,
-            shape = RoundedCornerShape(20.dp),
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            maxLines = 1,
-            singleLine = true,
-            textStyle = TextStyle(
-                fontSize = 14.sp,
+                .size(72.dp)
+                .align(Alignment.CenterHorizontally)
+                .background(AppColor.Black, shape = RoundedCornerShape(36.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                color = AppColor.White,
+                fontSize = 28.sp,
                 fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Normal,
-                color = AppColor.Black
-            ),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = AppColor.Black,
-                unfocusedTextColor = AppColor.Black,
-                focusedContainerColor = AppColor.WhiteFade,
-                unfocusedContainerColor = AppColor.WhiteFade,
-                focusedIndicatorColor = AppColor.Black,
-                unfocusedIndicatorColor = AppColor.WhiteFade,
-                focusedLabelColor = AppColor.BlackFade,
-                unfocusedLabelColor = AppColor.BlackFade,
+                fontWeight = FontWeight.Bold
             )
-        )
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        TextForm("Username")
-        OutlinedTextField(
-            value = email,
-            onValueChange = { if (isEditable) email = it },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            placeholder = { Text("Name") },
-            enabled = isEditable,
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            maxLines = 1,
-            singleLine = true,
-            textStyle = TextStyle(
-                fontSize = 14.sp,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Normal,
-                color = AppColor.Black
-            ),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = AppColor.WhiteFade,
-                unfocusedContainerColor = AppColor.WhiteFade,
-                focusedIndicatorColor = AppColor.Black,
-                unfocusedIndicatorColor = AppColor.WhiteFade
-            )
-        )
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        TextForm("Phone number")
-
-        OutlinedTextField(
-            value = phoneNumber,
-            onValueChange = { if (isEditable) phoneNumber = it },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            placeholder = { Text("Name") },
-            enabled = isEditable,
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            maxLines = 1,
-            singleLine = true,
-            textStyle = TextStyle(
-                fontSize = 14.sp,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Normal,
-                color = AppColor.Black
-            ),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = AppColor.WhiteFade,
-                unfocusedContainerColor = AppColor.WhiteFade,
-                focusedIndicatorColor = AppColor.Black,
-                unfocusedIndicatorColor = AppColor.WhiteFade,
-
-                )        )
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        if (!isEditable){
-            TextForm("Password")
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                placeholder = { Text("Name") },
-                trailingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.lock),
-                        contentDescription = "icon lock",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .padding(end = 5.dp),
-                        tint = AppColor.Black
-                    )
-                },
-                enabled = false,
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp),
-                maxLines = 1,
-                singleLine = true,
-                textStyle = TextStyle(
-                    fontSize = 14.sp,
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    color = AppColor.Black
-                ),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = AppColor.WhiteFade,
-                    unfocusedContainerColor = AppColor.WhiteFade,
-                    focusedIndicatorColor = AppColor.Black,
-                    unfocusedIndicatorColor = AppColor.WhiteFade
-                )
-            )
-
         }
 
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ProfileLabel("Name")
+        ProfileTextField(
+            value = name,
+            onValueChange = { name = it },
+            enabled = isEditable,
+            keyboardType = KeyboardType.Text
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+
+        ProfileLabel("Email")
+        ProfileTextField(
+            value = email,
+            onValueChange = {},
+            enabled = false,
+            keyboardType = KeyboardType.Email
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        ProfileLabel("Password")
+        ProfileTextField(
+            value = "••••••••",
+            onValueChange = {},
+            enabled = false,
+            keyboardType = KeyboardType.Password,
+            isPassword = true
+        )
+
+        Spacer(Modifier.height(20.dp))
 
         if (isEditable) {
             Button(
                 onClick = {
+                    authViewModel.updateDisplayName(name)
                     isEditable = false
-                    Toast.makeText(context, "Information updated", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Name updated", Toast.LENGTH_SHORT).show()
                 },
-                enabled = isEditable,
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp)
-                    .padding(horizontal = 15.dp),
+                    .height(52.dp),
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = AppColor.White,
-                    containerColor = AppColor.Black
+                    containerColor = AppColor.Black,
+                    contentColor = AppColor.White
                 )
             ) {
-                Text("Update Information")
+                Text(
+                    "Save Changes",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
-        }else{
+        } else {
             Button(
-                onClick = {
-                    navController.navigate("update_password")
-                },
+                onClick = { navController.navigate("update_password") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp)
-                    .padding(horizontal = 15.dp),
+                    .height(52.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = AppColor.White,
-                    containerColor = AppColor.Black
-                )
+                    containerColor = AppColor.White,
+                    contentColor = AppColor.Black
+                ),
+                border = BorderStroke(1.dp, AppColor.BlackFade)
             ) {
-                Text("Update password")
+                Text(
+                    "Update Password",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
+
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(
+            onClick = {
+                authViewModel.logout()
+                navController.navigate("sign_in") {
+                    popUpTo(0) { inclusive = true }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AppColor.Black,
+                contentColor = AppColor.White
+            )
+        ) {
+            Text(
+                "Logout",
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 
+@Composable
+fun ProfileLabel(text: String) {
+    Text(
+        text = text,
+        fontSize = 13.sp,
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        color = AppColor.BlackFade,
+        modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
+    )
+}
 
 
+@Composable
+fun ProfileTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    enabled: Boolean,
+    keyboardType: KeyboardType,
+    isPassword: Boolean = false
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        enabled = enabled,
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        shape = RoundedCornerShape(14.dp),
+        modifier = Modifier.fillMaxWidth(),
+        maxLines = 1,
+        singleLine = true,
+        textStyle = TextStyle(
+            fontSize = 15.sp,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.Normal,
+            color = AppColor.Black
+        ),
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = AppColor.Black,
+            unfocusedTextColor = AppColor.Black,
+            disabledTextColor = AppColor.Black,
+            focusedContainerColor = AppColor.WhiteFade,
+            unfocusedContainerColor = AppColor.WhiteFade,
+            disabledContainerColor = AppColor.WhiteFade,
+            focusedIndicatorColor = AppColor.Black,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+        )
+    )
+}

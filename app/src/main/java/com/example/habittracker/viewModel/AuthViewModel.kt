@@ -72,4 +72,28 @@ class AuthViewModel @Inject constructor(
         repository.logout()
         state = AuthState.Idle
     }
+
+
+    var userName by mutableStateOf(repository.getCurrentUserName())
+        private set
+    var userEmail by mutableStateOf(repository.getCurrentUserEmail())
+        private set
+
+    fun updateDisplayName(name: String) {
+        viewModelScope.launch {
+            state = AuthState.Loading
+            val result = repository.updateDisplayName(name)
+
+            state = when (result) {
+                is AuthResult.Success -> {
+                    userName = name
+                    AuthState.Success
+                }
+
+                is AuthResult.Error -> {
+                    AuthState.Error(result.message)
+                }
+            }
+        }
+    }
 }

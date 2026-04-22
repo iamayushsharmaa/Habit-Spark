@@ -23,6 +23,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -31,11 +33,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.habittracker.R
 import com.example.habittracker.common.Res
 import com.example.habittracker.data.models.HabitResponse
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
+import com.example.habittracker.view.main.component.HabitStreakSection
+import com.example.habittracker.viewModel.HabitsViewModel
 
 @Composable
 fun HabitDetailSheet(
@@ -44,8 +49,13 @@ fun HabitDetailSheet(
     isLocked: Boolean,
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
-    onCompleteClick: () -> Unit
+    onCompleteClick: () -> Unit,
+    habitViewModel: HabitsViewModel = hiltViewModel(),
 ) {
+
+    val currentStreak by habitViewModel.habitStreakFlow(habitId = habit.habitId).collectAsState()
+    val longestStreak by habitViewModel.longestHabitStreakFlow(habitId = habit.habitId).collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -203,6 +213,14 @@ fun HabitDetailSheet(
                 unfocusedLabelColor = AppColor.BlackFade,
             )
         )
+
+        Spacer(Modifier.height(20.dp))
+
+        HabitStreakSection(
+            currentStreak = currentStreak,
+            longestStreak = longestStreak
+        )
+
         Spacer(Modifier.weight(1f))
         Button(
             onClick = {

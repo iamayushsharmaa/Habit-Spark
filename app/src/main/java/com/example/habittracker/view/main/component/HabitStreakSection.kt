@@ -1,22 +1,27 @@
 package com.example.habittracker.view.main.component
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.habittracker.common.Res
 import com.example.habittracker.ui.theme.poppinsFontFamily
 
 @Composable
@@ -35,14 +40,14 @@ fun HabitStreakSection(
             modifier = Modifier.weight(1f),
             label = "Current Streak",
             value = currentStreak,
-            emoji = "🔥"
+            isCurrent = true
         )
         // longest streak card
         StreakCard(
             modifier = Modifier.weight(1f),
             label = "Longest Streak",
             value = longestStreak,
-            emoji = "🏆"
+            isCurrent = false
         )
     }
 }
@@ -52,7 +57,7 @@ fun StreakCard(
     modifier: Modifier = Modifier,
     label: String,
     value: Int,
-    emoji: String
+    isCurrent: Boolean
 ) {
     Column(
         modifier = modifier
@@ -61,7 +66,21 @@ fun StreakCard(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = emoji, fontSize = 28.sp)
+        if(isCurrent){
+            Icon(
+                painter = painterResource(id = Res.fireIcon),
+                contentDescription = "streak",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(40.dp)
+            )
+        } else{
+            Icon(
+                painter = painterResource(id = Res.fireIcon),
+                contentDescription = "streak",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(40.dp)
+            )
+        }
         Text(
             text = "$value",
             fontSize = 28.sp,
