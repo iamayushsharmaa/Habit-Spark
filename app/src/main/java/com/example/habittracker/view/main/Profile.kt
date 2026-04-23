@@ -114,24 +114,24 @@ fun Profile(
                     }
                 }
 
-                Spacer(Modifier.width(8.dp))
-
-                IconButton(
-                    onClick = { themeViewModel.toggleTheme() },
-                    modifier = Modifier
-                        .background(
-                            shape = RoundedCornerShape(10.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (isDark) Res.sun else Res.moon
-                        ),
-                        contentDescription = "Toggle theme",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+//                Spacer(Modifier.width(8.dp))
+//
+//                IconButton(
+//                    onClick = { themeViewModel.toggleTheme() },
+//                    modifier = Modifier
+//                        .background(
+//                            shape = RoundedCornerShape(10.dp),
+//                            color = MaterialTheme.colorScheme.surfaceVariant
+//                        )
+//                ) {
+//                    Icon(
+//                        painter = painterResource(
+//                            id = if (isDark) Res.sun else Res.moon
+//                        ),
+//                        contentDescription = "Toggle theme",
+//                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+//                    )
+//                }
             }
 
         }

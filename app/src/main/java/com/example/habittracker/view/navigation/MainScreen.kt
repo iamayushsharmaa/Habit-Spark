@@ -2,6 +2,12 @@ package com.example.habittracker.view.navigation
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -40,7 +46,41 @@ fun MainScreen(outerNavController: NavHostController) {
             NavHost(
                 navController = innerNavController,
                 startDestination = BottomNavItem.Home.route,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    ) + slideInHorizontally(
+                        initialOffsetX = { it / 8 },   // ✅ very subtle — 1/8 instead of 1/4
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    ) + slideOutHorizontally(
+                        targetOffsetX = { -it / 8 },
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    )
+                },
+                popEnterTransition = {
+                    fadeIn(
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    ) + slideInHorizontally(
+                        initialOffsetX = { -it / 8 },
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    )
+                },
+                popExitTransition = {
+                    fadeOut(
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    ) + slideOutHorizontally(
+                        targetOffsetX = { it / 8 },
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    )
+
+                }
+
             ) {
                 composable(BottomNavItem.Home.route) {
                     Home(navController = outerNavController)

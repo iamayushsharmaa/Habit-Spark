@@ -81,14 +81,18 @@ fun Home(
         }
     }
 
-    if (showSheet && selectedHabit != null) {
+    val currenthabit = selectedHabit
+    if (showSheet && currenthabit != null) {
         ModalBottomSheet(
             onDismissRequest = {
-                showSheet = false
-                selectedHabit = null
+                coroutineScope.launch {
+                    sheetState.hide()
+                    showSheet = false
+                    selectedHabit = null
+                }
             },
             sheetState = sheetState,
-            containerColor = colors.surface,
+            tonalElevation = 4.dp,
             dragHandle = {
                 Box(
                     modifier = Modifier
@@ -103,23 +107,28 @@ fun Home(
             }
         ) {
             HabitDetailSheet(
-                habit = selectedHabit!!,
-                isCompleted = selectedHabit!!.isCompletedOn(selectedDate),
+                habit = currenthabit,
+                isCompleted = currenthabit.isCompletedOn(selectedDate),
                 isLocked = selectedDate < today,
                 onDismissRequest = {
-                    showSheet = false
-                    selectedHabit = null
+                    coroutineScope.launch {
+                        sheetState.hide()
+                        showSheet = false
+                        selectedHabit = null
+                    }
                 },
                 onDeleteClick = {
                     coroutineScope.launch {
-                        habitViewModel.deleteHabit(selectedHabit!!.habitId)
+                        habitViewModel.deleteHabit(currenthabit.habitId)
+                        sheetState.hide()
                         showSheet = false
                         selectedHabit = null
                     }
                 },
                 onCompleteClick = {
                     coroutineScope.launch {
-                        habitViewModel.toggleHabit(selectedHabit!!.habitId)
+                        habitViewModel.toggleHabit(currenthabit.habitId)
+                        sheetState.hide()
                         showSheet = false
                         selectedHabit = null
                     }

@@ -70,7 +70,7 @@ fun HabitStyle(
             Icon(
                 painter = painterResource(id = Res.toResId(habit.icon)),
                 contentDescription = habit.name,
-                tint = colors.onBackground,
+                tint = colors.surface,
                 modifier = Modifier.size(26.dp)
             )
         }
