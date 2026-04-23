@@ -19,6 +19,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -37,7 +38,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.habittracker.R
 import com.example.habittracker.common.Res
 import com.example.habittracker.data.models.HabitResponse
-import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.example.habittracker.view.main.component.HabitStreakSection
 import com.example.habittracker.viewModel.HabitsViewModel
@@ -53,30 +53,35 @@ fun HabitDetailSheet(
     habitViewModel: HabitsViewModel = hiltViewModel(),
 ) {
 
+    val colors = MaterialTheme.colorScheme
+
     val currentStreak by habitViewModel.habitStreakFlow(habitId = habit.habitId).collectAsState()
-    val longestStreak by habitViewModel.longestHabitStreakFlow(habitId = habit.habitId).collectAsState()
+    val longestStreak by habitViewModel.longestHabitStreakFlow(habitId = habit.habitId)
+        .collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 14.dp, vertical = 10.dp)
-            .background(color = AppColor.White),
+            .background(colors.surface),
     ) {
         Spacer(modifier = Modifier.height(20.dp))
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             IconButton(
                 onClick = { onDeleteClick() },
                 modifier = Modifier
                     .size(44.dp)
-                    .background(shape = RoundedCornerShape(14.dp), color = AppColor.WhiteFade),
+                    .background(shape = RoundedCornerShape(14.dp), color = colors.surfaceVariant),
                 colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = AppColor.RedBrown,
-                    containerColor = AppColor.WhiteFade
+                    contentColor = colors.error,
+                    containerColor = colors.surfaceVariant
                 )
             ) {
                 Icon(
@@ -87,6 +92,7 @@ fun HabitDetailSheet(
                     contentDescription = "delete icon"
                 )
             }
+
             Spacer(Modifier.weight(1f))
 
             Column(
@@ -108,9 +114,8 @@ fun HabitDetailSheet(
                     Icon(
                         painter = painterResource(id = Res.toResId(habit.icon)),
                         contentDescription = habit.name,
-                        tint = AppColor.Black,
-                        modifier = Modifier
-                            .size(28.dp)
+                        tint = colors.onSurface,
+                        modifier = Modifier.size(28.dp)
                     )
                 }
 
@@ -121,10 +126,16 @@ fun HabitDetailSheet(
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
-                    color = AppColor.Black,
+                    color = colors.onSurface,
                     textAlign = TextAlign.Center,
                     maxLines = 1
                 )
+
+                val statusColor = when {
+                    isLocked -> colors.onSurfaceVariant
+                    isCompleted -> colors.primary
+                    else -> colors.secondary
+                }
 
                 Text(
                     text = when {
@@ -132,23 +143,20 @@ fun HabitDetailSheet(
                         isCompleted -> "Completed"
                         else -> "Pending"
                     },
-                    color = when {
-                        isLocked -> AppColor.Gray
-                        isCompleted -> AppColor.Green
-                        else -> AppColor.Orange
-                    },
+                    color = statusColor,
                     fontSize = 14.sp
                 )
             }
+
             Spacer(Modifier.weight(1f))
 
             IconButton(
                 modifier = Modifier
                     .size(44.dp)
-                    .background(shape = RoundedCornerShape(14.dp), color = AppColor.WhiteFade),
+                    .background(shape = RoundedCornerShape(14.dp), color = colors.surfaceVariant),
                 colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = AppColor.Black,
-                    containerColor = AppColor.WhiteFade
+                    contentColor = colors.onSurface,
+                    containerColor = colors.surfaceVariant
                 ),
                 onClick = { onDismissRequest() }
             ) {
@@ -162,57 +170,55 @@ fun HabitDetailSheet(
             }
         }
 
-        // graph track
-
         Spacer(Modifier.height(20.dp))
+
         BoxDesign(text = habit.description)
 
-        Text(
-            text = "Target",
-            fontFamily = poppinsFontFamily,
-            fontWeight = FontWeight.Normal,
-            color = AppColor.Black,
-            fontSize = 15.sp,
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 5.dp)
-        )
+        if (habit.goal != null &&
+            habit.goal.value.isNotBlank() &&
+            habit.goal.unit.isNotBlank()
+        ) {
 
-        OutlinedTextField(
-            value = "${habit.goal.value} ${habit.goal.unit}",
-            onValueChange = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            enabled = false,
-            readOnly = true,
-            textStyle = TextStyle(
+            Text(
+                text = "Target",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                color = AppColor.Black
-            ),
-            shape = RoundedCornerShape(14.dp),
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = Res.toResId(habit.icon)),
-                    contentDescription = "habit icon",
-                    tint = AppColor.Black
-                )
-            },
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = AppColor.Black,
-                unfocusedTextColor = AppColor.Black,
-                focusedContainerColor = AppColor.WhiteFade,
-                unfocusedContainerColor = AppColor.WhiteFade,
-                focusedIndicatorColor = AppColor.Black,
-                unfocusedIndicatorColor = AppColor.BlackFade,
-                disabledContainerColor = AppColor.WhiteFade,
-                disabledTextColor = AppColor.Black,
-                disabledIndicatorColor = AppColor.BlackFade,
-                focusedLabelColor = AppColor.BlackFade,
-                unfocusedLabelColor = AppColor.BlackFade,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 15.sp,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 5.dp)
             )
-        )
+
+            OutlinedTextField(
+                value = "${habit.goal.value} ${habit.goal.unit}",
+                onValueChange = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                enabled = false,
+                readOnly = true,
+                textStyle = TextStyle(
+                    fontFamily = poppinsFontFamily,
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                shape = RoundedCornerShape(14.dp),
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = Res.toResId(habit.icon)),
+                        contentDescription = "habit icon",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+        }
 
         Spacer(Modifier.height(20.dp))
 
@@ -222,6 +228,7 @@ fun HabitDetailSheet(
         )
 
         Spacer(Modifier.weight(1f))
+
         Button(
             onClick = {
                 if (!isLocked) {
@@ -234,12 +241,11 @@ fun HabitDetailSheet(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(
-                contentColor = if (isCompleted) AppColor.Black else AppColor.White,
-                containerColor = if (isCompleted) AppColor.WhiteFade else AppColor.Black
+                contentColor = if (isCompleted) colors.onSurface else colors.onPrimary,
+                containerColor = if (isCompleted) colors.surfaceVariant else colors.primary
             ),
-            border = if (isCompleted) BorderStroke(1.dp, AppColor.BlackFade) else null,
-
-            ) {
+            border = if (isCompleted) BorderStroke(1.dp, colors.outline) else null,
+        ) {
             Text(
                 text = when {
                     isLocked -> "Locked"
@@ -251,18 +257,22 @@ fun HabitDetailSheet(
                 fontWeight = FontWeight.Normal
             )
         }
-
     }
 }
 
 @Composable
 fun BoxDesign(text: String) {
+    val colors = MaterialTheme.colorScheme
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(horizontal = 14.dp, vertical = 3.dp)
-            .background(shape = RoundedCornerShape(16.dp), color = AppColor.WhiteFade)
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colors.surfaceVariant
+            )
     ) {
         Text(
             text = text,
@@ -272,7 +282,7 @@ fun BoxDesign(text: String) {
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
-            color = AppColor.Black,
+            color = colors.onSurface,
             textAlign = TextAlign.Center,
             softWrap = true
         )

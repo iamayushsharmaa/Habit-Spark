@@ -1,6 +1,5 @@
 package com.example.habittracker.view.main.component
 
-import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,14 +35,13 @@ fun HabitStreakSection(
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // current streak card
         StreakCard(
             modifier = Modifier.weight(1f),
             label = "Current Streak",
             value = currentStreak,
             isCurrent = true
         )
-        // longest streak card
+
         StreakCard(
             modifier = Modifier.weight(1f),
             label = "Longest Streak",
@@ -59,38 +58,34 @@ fun StreakCard(
     value: Int,
     isCurrent: Boolean
 ) {
+    val colors = MaterialTheme.colorScheme
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFFF5F5F5))
+            .background(colors.surfaceVariant)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if(isCurrent){
-            Icon(
-                painter = painterResource(id = Res.fireIcon),
-                contentDescription = "streak",
-                tint = Color.Unspecified,
-                modifier = Modifier.size(40.dp)
-            )
-        } else{
-            Icon(
-                painter = painterResource(id = Res.fireIcon),
-                contentDescription = "streak",
-                tint = Color.Unspecified,
-                modifier = Modifier.size(40.dp)
-            )
-        }
+        Icon(
+            painter = painterResource(id = Res.fireIcon),
+            contentDescription = "streak",
+            tint = Color.Unspecified,
+            modifier = Modifier.size(40.dp)
+        )
+
         Text(
             text = "$value",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = poppinsFontFamily
+            fontFamily = poppinsFontFamily,
+            color = colors.onSurface
         )
+
         Text(
             text = label,
             fontSize = 11.sp,
-            color = Color.Gray,
+            color = colors.onSurfaceVariant,
             fontFamily = poppinsFontFamily,
             textAlign = TextAlign.Center
         )

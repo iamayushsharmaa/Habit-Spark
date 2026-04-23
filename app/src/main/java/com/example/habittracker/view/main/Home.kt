@@ -2,9 +2,7 @@ package com.example.habittracker.view.main
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +21,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -42,12 +40,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracker.data.models.HabitResponse
 import com.example.habittracker.data.models.isCompletedOn
-import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.example.habittracker.utils.getTodayTimestamp
 import com.example.habittracker.utils.toTimestamp
 import com.example.habittracker.view.main.component.GlobalStreakBanner
 import com.example.habittracker.view.main.component.HabitStyle
+import com.example.habittracker.view.main.component.TrackerLayout
 import com.example.habittracker.viewModel.HabitsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -58,11 +56,11 @@ fun Home(
     navController: NavController,
     habitViewModel: HabitsViewModel = hiltViewModel(),
 ) {
+    val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
 
     val userName = FirebaseAuth.getInstance().currentUser?.displayName ?: "Hey there"
     val globalStreak by habitViewModel.globalStreak.collectAsState()
-
 
     val habits by habitViewModel.habitsForSelectedDates.collectAsState()
     val uiState by habitViewModel.uiState.collectAsState()
@@ -72,11 +70,16 @@ fun Home(
 
     var selectedHabit by remember { mutableStateOf<HabitResponse?>(null) }
     var showSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val today = getTodayTimestamp()
+    val allHabits by habitViewModel.allHabits.collectAsState()
+
+    LaunchedEffect(uiState.error) {
+        if (uiState.error != null) {
+            Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     if (showSheet && selectedHabit != null) {
         ModalBottomSheet(
@@ -85,7 +88,7 @@ fun Home(
                 selectedHabit = null
             },
             sheetState = sheetState,
-            containerColor = AppColor.White,
+            containerColor = colors.surface,
             dragHandle = {
                 Box(
                     modifier = Modifier
@@ -93,7 +96,7 @@ fun Home(
                         .width(50.dp)
                         .height(4.dp)
                         .background(
-                            color = Color.Gray.copy(alpha = 0.4f),
+                            color = colors.onSurfaceVariant.copy(alpha = 0.4f),
                             shape = RoundedCornerShape(2.dp)
                         )
                 )
@@ -125,56 +128,69 @@ fun Home(
         }
     }
 
-    Column(
+
+    LazyColumn(
         modifier = Modifier
-            .background(color = MaterialTheme.colorScheme.background)
+            .background(colors.background)
             .fillMaxSize()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Hey! $userName",
-                fontSize = 22.sp,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(start = 15.dp, top = 15.dp)
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Hey! $userName",
+                    fontSize = 22.sp,
+                    color = colors.onBackground,
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 15.dp, top = 15.dp)
+                )
+            }
+        }
+
+        item { Spacer(Modifier.height(10.dp)) }
+
+        item { TrackerLayout(habits = allHabits) }
+
+        item { Spacer(Modifier.height(2.dp)) }
+
+        item {
+            WeekCalendarScreen(
+                modifier = Modifier.padding(start = 4.dp),
+                onDateClicked = { localDate ->
+                    habitViewModel.onDateSelected(localDate.toTimestamp())
+                }
             )
         }
 
-        Spacer(Modifier.height(8.dp))
+        item { Spacer(Modifier.height(10.dp)) }
 
-        WeekCalendarScreen(
-            modifier = Modifier.padding(start = 4.dp),
-            onDateClicked = { localDate ->
-                habitViewModel.onDateSelected(localDate.toTimestamp())
-            }
-        )
+        item { GlobalStreakBanner(streak = globalStreak) }
 
-        Spacer(Modifier.height(10.dp))
-        GlobalStreakBanner(streak = globalStreak)
+        item { Spacer(Modifier.height(8.dp)) }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = CenterHorizontally
-        ) {
-            when {
-                uiState.isLoading -> {
-                    ProgressBar(modifier = Modifier.align(CenterHorizontally))
+        when {
+            uiState.isLoading -> {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ProgressBar(modifier = Modifier)
+                    }
                 }
+            }
 
-                uiState.error != null -> {
+            uiState.error != null -> {
+                item {
                     Text(
                         text = "You have no habits at the moment",
                         fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colors.onSurfaceVariant,
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier
@@ -182,48 +198,54 @@ fun Home(
                             .fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
-                    Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
+            }
 
-                habits.isEmpty() -> {
+            habits.isEmpty() -> {
+                item {
                     Text(
                         text = "Add new Habits",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colors.onSurfaceVariant,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 32.dp)
                     )
                 }
+            }
 
-                else -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(habits) { habit ->
-                            val streak by habitViewModel.habitStreakFlow(habitId = habit.habitId)
-                                .collectAsState()
-                            HabitStyle(
-                                habit = habit,
-                                isCompleted = habit.isCompletedOn(selectedDate),
-                                isLocked = selectedDate < today,
-                                streak = streak,
-                                onClick = {
-                                    selectedHabit = habit
-                                    showSheet = true
-                                }
-                            )
+            else -> {
+                items(habits) { habit ->
+                    val streak by habitViewModel
+                        .habitStreakFlow(habitId = habit.habitId)
+                        .collectAsState()
+
+                    HabitStyle(
+                        habit = habit,
+                        isCompleted = habit.isCompletedOn(selectedDate),
+                        isLocked = selectedDate < today,
+                        streak = streak,
+                        onClick = {
+                            selectedHabit = habit
+                            showSheet = true
                         }
-                    }
+                    )
                 }
             }
         }
+
+        item { Spacer(Modifier.height(16.dp)) }
     }
 }
-
 
 @Composable
 fun ProgressBar(
     modifier: Modifier
 ) {
+    val colors = MaterialTheme.colorScheme
+
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(55.dp)
             .background(Color.Transparent),
         contentAlignment = Alignment.Center
@@ -232,8 +254,9 @@ fun ProgressBar(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(4.dp),
-            color = AppColor.BlackFade,
+            color = colors.primary,
             strokeWidth = 5.dp
         )
     }
 }
+

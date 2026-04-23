@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.example.habittracker.viewModel.CalendarViewModel
 import java.time.LocalDate
@@ -41,6 +41,8 @@ fun WeekCalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
     onDateClicked: (LocalDate) -> Unit
 ) {
+    val colors = MaterialTheme.colorScheme
+
     val currentDate = viewModel.currentDate.collectAsState().value
     val selectedDate = viewModel.selectedDate.collectAsState().value
 
@@ -48,13 +50,13 @@ fun WeekCalendarScreen(
 
     val weekOffset = pagerState.currentPage - 2
 
-
     Column(modifier = modifier) {
         Text(
             text = viewModel.getWeekDates(weekOffset).monthName,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
+            color = colors.onBackground,
             modifier = Modifier.padding(16.dp)
         )
 
@@ -83,9 +85,7 @@ fun WeekCalendarScreen(
                 }
             }
         }
-
     }
-
 }
 
 @Composable
@@ -97,28 +97,26 @@ fun CalendarStyle(
     isCurrentDate: Boolean,
     onDateClicked: () -> Unit
 ) {
-    val isBoth = isSelectedDate && isCurrentDate
+    val colors = MaterialTheme.colorScheme
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .height(62.dp)
             .width(48.dp)
             .then(
                 if (isCurrentDate && !isSelectedDate)
-                    Modifier.border(1.5.dp, AppColor.Black, RoundedCornerShape(10.dp))
+                    Modifier.border(
+                        1.5.dp,
+                        colors.onSurface,
+                        RoundedCornerShape(10.dp)
+                    )
                 else Modifier
             ),
         onClick = { onDateClicked() },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
-            containerColor = when {
-                isSelectedDate -> AppColor.Black
-                else -> AppColor.WhiteFade
-            },
-            contentColor = when {
-                isSelectedDate -> AppColor.White
-                else -> AppColor.Black
-            }
+            containerColor = if (isSelectedDate) colors.primary else colors.surfaceVariant,
+            contentColor = if (isSelectedDate) colors.onPrimary else colors.onSurface
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isSelectedDate) 6.dp else 0.dp
@@ -135,6 +133,7 @@ fun CalendarStyle(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,
             )
+
             Text(
                 text = day,
                 fontFamily = poppinsFontFamily,
@@ -149,7 +148,10 @@ fun CalendarStyle(
                     modifier = Modifier
                         .size(4.dp)
                         .background(
-                            color = if (isSelectedDate) AppColor.White else AppColor.Black,
+                            color = if (isSelectedDate)
+                                colors.onPrimary
+                            else
+                                colors.onSurface,
                             shape = RoundedCornerShape(2.dp)
                         )
                 )

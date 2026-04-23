@@ -48,6 +48,7 @@ import androidx.navigation.NavController
 import com.example.habittracker.common.ui_states.AuthState
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.view.auth.component.GoogleSignInButton
+import com.example.habittracker.view.navigation.Screen
 import com.example.habittracker.viewModel.AuthViewModel
 
 @Composable
@@ -65,8 +66,8 @@ fun SignInScreen(
     LaunchedEffect(state) {
         when (state) {
             is AuthState.Success -> {
-                navController.navigate("main_screen") {
-                    popUpTo("signin") { inclusive = true }
+                navController.navigate(Screen.Main.route) {
+                    popUpTo(Screen.SignIn.route) { inclusive = true }
                 }
             }
 
@@ -218,8 +219,8 @@ fun SignInScreen(
                             end = offset
                         )
                             .firstOrNull()?.let {
-                                navController.navigate("signup") {
-                                    popUpTo("signin") {
+                                navController.navigate(Screen.SignUp.route) {
+                                    popUpTo(Screen.SignIn.route) {
                                         inclusive = true
                                     }
                                 }

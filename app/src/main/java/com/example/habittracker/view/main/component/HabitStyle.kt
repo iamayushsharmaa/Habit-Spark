@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.habittracker.common.Res
 import com.example.habittracker.data.models.HabitResponse
-import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
 
 @Composable
@@ -43,20 +42,21 @@ fun HabitStyle(
     streak: Int,
     onClick: () -> Unit
 ) {
+    val colors = MaterialTheme.colorScheme
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 16.dp, vertical = 5.dp)
             .height(70.dp)
             .background(
                 shape = RoundedCornerShape(14.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant
+                color = colors.surfaceVariant
             )
             .clickable(enabled = !isLocked) { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(Modifier.width(10.dp))
-
 
         Box(
             modifier = Modifier
@@ -70,9 +70,8 @@ fun HabitStyle(
             Icon(
                 painter = painterResource(id = Res.toResId(habit.icon)),
                 contentDescription = habit.name,
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .size(26.dp)
+                tint = colors.onBackground,
+                modifier = Modifier.size(26.dp)
             )
         }
 
@@ -89,20 +88,30 @@ fun HabitStyle(
                 fontFamily = poppinsFontFamily,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = colors.onSurfaceVariant,
                 maxLines = 1
             )
+
             Spacer(Modifier.height(3.dp))
+
+            val statusBackground = when {
+                isLocked -> colors.surface.copy(alpha = 0.3f)
+                isCompleted -> colors.primary.copy(alpha = 0.2f)
+                else -> colors.secondary.copy(alpha = 0.2f)
+            }
+
+            val statusTextColor = when {
+                isLocked -> colors.onSurfaceVariant
+                isCompleted -> colors.primary
+                else -> colors.secondary
+            }
+
             Box(
                 modifier = Modifier
                     .wrapContentSize()
                     .background(
                         shape = RoundedCornerShape(4.dp),
-                        color = when {
-                            isLocked -> AppColor.Gray.copy(alpha = 0.3f)
-                            isCompleted -> AppColor.Green.copy(alpha = 0.2f)
-                            else -> AppColor.Orange.copy(alpha = 0.2f)
-                        }
+                        color = statusBackground
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -114,11 +123,7 @@ fun HabitStyle(
                     },
                     fontFamily = poppinsFontFamily,
                     fontSize = 11.sp,
-                    color = when {
-                        isLocked -> AppColor.Gray
-                        isCompleted -> AppColor.Green
-                        else -> AppColor.Orange
-                    },
+                    color = statusTextColor,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                 )
@@ -127,7 +132,7 @@ fun HabitStyle(
 
         VerticalDivider(
             modifier = Modifier.padding(vertical = 12.dp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+            color = colors.onSurfaceVariant.copy(alpha = 0.2f)
         )
 
         Column(
@@ -149,7 +154,7 @@ fun HabitStyle(
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,
-                    color = AppColor.StreakColor
+                    color = colors.secondary
                 )
             } else {
                 Text(
@@ -158,11 +163,11 @@ fun HabitStyle(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = colors.onBackground
                 )
                 Text(
                     text = habit.goal.unit,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = colors.onSurfaceVariant,
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.Normal,
                     fontSize = 11.sp,
@@ -170,6 +175,7 @@ fun HabitStyle(
                 )
             }
         }
+
         Spacer(Modifier.width(4.dp))
     }
 }

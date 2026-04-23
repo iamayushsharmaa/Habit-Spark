@@ -29,6 +29,14 @@ class HabitsViewModel @Inject constructor(
     private val _selectedDate = MutableStateFlow(getTodayTimestamp())
     val selectedDate: StateFlow<Long> = _selectedDate
 
+    val allHabits: StateFlow<List<HabitResponse>> = _uiState
+        .map { it.habits }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     val habitsForSelectedDates: StateFlow<List<HabitResponse>> =
         combine(_uiState, _selectedDate) { state, selected ->
             state.habits.filter {

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,14 +25,32 @@ import com.example.habittracker.ui.theme.poppinsFontFamily
 
 @Composable
 fun GlobalStreakBanner(streak: Int) {
+    val colors = MaterialTheme.colorScheme
+
+    val backgroundColor = if (streak > 0) {
+        colors.secondary
+    } else {
+        colors.surfaceVariant
+    }
+
+    val titleColor = if (streak > 0) {
+        colors.onSecondary.copy(alpha = 0.8f)
+    } else {
+        colors.onSurfaceVariant
+    }
+
+    val valueColor = if (streak > 0) {
+        colors.onSecondary
+    } else {
+        colors.onSurface
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(
-                if (streak > 0) Color(0xFFFF6B35) else Color(0xFFF5F5F5)
-            )
+            .background(backgroundColor)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -40,17 +59,19 @@ fun GlobalStreakBanner(streak: Int) {
             Text(
                 text = "Current Streak",
                 fontSize = 12.sp,
-                color = if (streak > 0) Color.White.copy(alpha = 0.8f) else Color.Gray,
+                color = titleColor,
                 fontFamily = poppinsFontFamily
             )
+
             Text(
                 text = "$streak day${if (streak != 1) "s" else ""}",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (streak > 0) Color.White else Color.DarkGray,
+                color = valueColor,
                 fontFamily = poppinsFontFamily
             )
         }
+
         if (streak > 0) {
             Icon(
                 painter = painterResource(id = Res.fireIcon),
@@ -59,7 +80,10 @@ fun GlobalStreakBanner(streak: Int) {
                 modifier = Modifier.size(40.dp)
             )
         } else {
-            Text(text = "💤", fontSize = 40.sp)
+            Text(
+                text = "💤",
+                fontSize = 40.sp
+            )
         }
     }
 }

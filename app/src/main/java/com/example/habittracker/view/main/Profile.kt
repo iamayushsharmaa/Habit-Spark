@@ -49,6 +49,7 @@ import androidx.navigation.NavHostController
 import com.example.habittracker.common.Res
 import com.example.habittracker.ui.theme.AppColor
 import com.example.habittracker.ui.theme.poppinsFontFamily
+import com.example.habittracker.view.navigation.Screen
 import com.example.habittracker.viewModel.AuthViewModel
 import com.example.habittracker.viewModel.ThemeViewModel
 
@@ -58,7 +59,6 @@ fun Profile(
     authViewModel: AuthViewModel = hiltViewModel(),
     themeViewModel: ThemeViewModel = hiltViewModel()
 ) {
-
     val context = LocalContext.current
 
     var name by remember { mutableStateOf(authViewModel.userName) }
@@ -90,7 +90,7 @@ fun Profile(
                 fontSize = 28.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold,
-                color = AppColor.Black,
+                color = MaterialTheme.colorScheme.onBackground,
             )
             Row(
                 modifier = Modifier
@@ -102,13 +102,13 @@ fun Profile(
                         modifier = Modifier
                             .background(
                                 shape = RoundedCornerShape(10.dp),
-                                color = AppColor.WhiteFade
+                                color = MaterialTheme.colorScheme.surfaceVariant
                             )
                     ) {
                         Icon(
                             Icons.Default.Edit,
                             contentDescription = "Edit",
-                            tint = AppColor.Black,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -129,7 +129,7 @@ fun Profile(
                             id = if (isDark) Res.sun else Res.moon
                         ),
                         contentDescription = "Toggle theme",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -141,12 +141,12 @@ fun Profile(
             modifier = Modifier
                 .size(72.dp)
                 .align(Alignment.CenterHorizontally)
-                .background(AppColor.Black, shape = RoundedCornerShape(36.dp)),
+                .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(36.dp)),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
-                color = AppColor.White,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 28.sp,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold
@@ -199,8 +199,8 @@ fun Profile(
                     .fillMaxWidth()
                     .height(52.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColor.Black,
-                    contentColor = AppColor.White
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             ) {
                 Text(
@@ -211,16 +211,16 @@ fun Profile(
             }
         } else {
             Button(
-                onClick = { navController.navigate("update_password") },
+                onClick = { navController.navigate(Screen.UpdatePassword.route) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColor.White,
-                    contentColor = AppColor.Black
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
-                border = BorderStroke(1.dp, AppColor.BlackFade)
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Text(
                     "Update Password",
@@ -236,7 +236,7 @@ fun Profile(
         Button(
             onClick = {
                 authViewModel.logout()
-                navController.navigate("sign_in") {
+                navController.navigate(Screen.SignIn.route) {
                     popUpTo(0) { inclusive = true }
                 }
             },
@@ -245,8 +245,8 @@ fun Profile(
                 .height(52.dp),
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AppColor.Black,
-                contentColor = AppColor.White
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         ) {
             Text(
@@ -269,11 +269,10 @@ fun ProfileLabel(text: String) {
         fontSize = 13.sp,
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.SemiBold,
-        color = AppColor.BlackFade,
+        color = MaterialTheme.colorScheme.onBackground,
         modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
     )
 }
-
 
 @Composable
 fun ProfileTextField(
@@ -297,16 +296,16 @@ fun ProfileTextField(
             fontSize = 15.sp,
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Normal,
-            color = AppColor.Black
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         colors = TextFieldDefaults.colors(
-            focusedTextColor = AppColor.Black,
-            unfocusedTextColor = AppColor.Black,
-            disabledTextColor = AppColor.Black,
-            focusedContainerColor = AppColor.WhiteFade,
-            unfocusedContainerColor = AppColor.WhiteFade,
-            disabledContainerColor = AppColor.WhiteFade,
-            focusedIndicatorColor = AppColor.Black,
+            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
         )

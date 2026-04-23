@@ -1,11 +1,13 @@
 package com.example.habittracker.ui.theme
 
 
+import android.R.id.primary
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import com.example.habittracker.ui.theme.AppColor
 
 private val LightColorsScheme = lightColorScheme(
     background = AppColor.White,
@@ -13,7 +15,11 @@ private val LightColorsScheme = lightColorScheme(
     onBackground = AppColor.Black,
     onSurface = AppColor.Black,
     surfaceVariant = AppColor.WhiteFade,
-    onSurfaceVariant = AppColor.BlackFade
+    onSurfaceVariant = AppColor.BlackFade,
+    secondary = AppColor.Orange,
+    onPrimary = AppColor.WhiteFade,
+    primary = AppColor.Green,
+    onSecondary = AppColor.Black
 )
 
 private val DarkColorsScheme = darkColorScheme(
@@ -22,7 +28,11 @@ private val DarkColorsScheme = darkColorScheme(
     onBackground = AppColor.White,
     onSurface = AppColor.White,
     surfaceVariant = AppColor.DarkWhiteFade,
-    onSurfaceVariant = AppColor.DarkBlackFade
+    onSurfaceVariant = AppColor.DarkBlackFade,
+    secondary = AppColor.Orange,
+    onSecondary = AppColor.White,
+    primary = AppColor.Green,
+    onPrimary = AppColor.BlackFade,
 )
 
 @Composable
