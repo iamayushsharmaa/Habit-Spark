@@ -15,15 +15,18 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.habittracker.ui.theme.HabitTheme
 import com.example.habittracker.core.notifications.NotificationHelper
 import com.example.habittracker.core.notifications.NotificationScheduler
+import com.example.habittracker.core.onboarding.OnboardingPreference
+import com.example.habittracker.ui.theme.HabitTheme
 import com.example.habittracker.view.auth.SignInScreen
 import com.example.habittracker.view.auth.SignUpScreen
 import com.example.habittracker.view.main.UpdatePassword
+import com.example.habittracker.view.onboarding.OnBoardingScreen
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,12 +44,15 @@ class MainActivity : ComponentActivity() {
             RequestNotificationPermission()
             HabitTheme {
                 val navController = rememberNavController()
+                val context = LocalContext.current
                 val isUserSignedIn = FirebaseAuth.getInstance().currentUser != null
+                val onboardingDone = OnboardingPreference.isOnboardingDone(context)
 
-                val startDestination = if (isUserSignedIn) {
-                    Screen.Main.route
-                } else {
-                    Screen.SignIn.route
+
+                val startDestination = when {
+                    !onboardingDone -> Screen.Onboarding.route
+                    isUserSignedIn -> Screen.Main.route
+                    else -> Screen.SignIn.route
                 }
 
                 NavHost(
@@ -85,6 +91,20 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) {
+
+                    composable(Screen.Onboarding.route) {
+                        OnBoardingScreen(
+                            onFinished = {
+                                navController.navigate(
+                                    if (isUserSignedIn) Screen.Main.route
+                                    else Screen.SignIn.route
+                                ) {
+                                    popUpTo(Screen.Onboarding.route) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+
                     composable(Screen.SignIn.route) {
                         SignInScreen(
                             navController = navController,
