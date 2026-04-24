@@ -33,8 +33,7 @@ fun HabitTextField(
             onValueChange = onValueChange,
             placeholder = { Text("Enter $title") },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
+                .fillMaxWidth(),
             shape = RoundedCornerShape(18.dp),
             singleLine = true,
             textStyle = TextStyle(
@@ -67,6 +66,6 @@ fun SectionTitle(text: String) {
         fontSize = 13.sp,
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Normal,
-        modifier = Modifier.padding(start = 15.dp, top = 8.dp)
+        modifier = Modifier.padding(top = 8.dp)
     )
 }

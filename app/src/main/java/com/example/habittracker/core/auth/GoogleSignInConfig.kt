@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.habittracker.core.auth
 
 import android.content.Context

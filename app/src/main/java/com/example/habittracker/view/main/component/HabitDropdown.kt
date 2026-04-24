@@ -51,7 +51,6 @@ fun DropdownField(
                 readOnly = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 15.dp)
                     .menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 shape = RoundedCornerShape(18.dp),
                 textStyle = TextStyle(

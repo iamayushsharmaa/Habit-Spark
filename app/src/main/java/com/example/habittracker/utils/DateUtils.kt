@@ -1,6 +1,7 @@
 package com.example.habittracker.utils
 
 import java.time.LocalDate
+import java.time.LocalTime
 
 fun getTodayTimestamp(): Long {
     val calendar = java.util.Calendar.getInstance()
@@ -23,4 +24,13 @@ fun LocalDate.toTimestamp(): Long {
         set(java.util.Calendar.MILLISECOND, 0)
     }
     return calendar.timeInMillis
+}
+
+fun greetingText(): String {
+    return when (LocalTime.now().hour) {
+        in 5..11 -> "Good Morning ☀️"
+        in 12..16 -> "Good Afternoon 👋"
+        in 17..20 -> "Good Evening 🌆"
+        else -> "Good Night 🌙"
+    }
 }

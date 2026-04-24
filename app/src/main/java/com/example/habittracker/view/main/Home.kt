@@ -2,7 +2,9 @@ package com.example.habittracker.view.main
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +44,7 @@ import com.example.habittracker.data.models.HabitResponse
 import com.example.habittracker.data.models.isCompletedOn
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.example.habittracker.utils.getTodayTimestamp
+import com.example.habittracker.utils.greetingText
 import com.example.habittracker.utils.toTimestamp
 import com.example.habittracker.view.main.component.EmptyHabitsState
 import com.example.habittracker.view.main.component.GlobalStreakBanner
@@ -149,17 +152,27 @@ fun Home(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "Hey! $userName",
-                    fontSize = 22.sp,
-                    color = colors.onBackground,
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 15.dp, top = 15.dp)
-                )
+
+                Column {
+                    Text(
+                        text = greetingText(),
+                        fontSize = 13.sp,
+                        color = colors.onSurfaceVariant,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+                    Text(
+                        text = "Hey, $userName!",
+                        fontSize = 22.sp,
+                        color = colors.onBackground,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
 

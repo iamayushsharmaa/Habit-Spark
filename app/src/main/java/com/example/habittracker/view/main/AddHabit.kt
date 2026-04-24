@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -78,11 +77,12 @@ fun AddHabit(
     var selectedIcon by remember { mutableStateOf("fitness") }
     var selectedColor by remember { mutableStateOf("#FFC107") }
 
+    val showPreview = habitName.isNotBlank()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colors.background)
-            .statusBarsPadding()
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
     ) {
@@ -145,45 +145,51 @@ fun AddHabit(
             }
         }
 
-        Spacer(Modifier.height(5.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
+        if (showPreview) {
+            Spacer(Modifier.height(8.dp))
+            Row(
                 modifier = Modifier
-                    .size(72.dp)
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp)
                     .background(
-                        color = Res.toColor(selectedColor),
-                        shape = RoundedCornerShape(20.dp)
-                    ),
-                contentAlignment = Alignment.Center
+                        color = colors.surfaceVariant.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(Res.toResId(selectedIcon)),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(36.dp)
-                )
-            }
-            Spacer(Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = habitName.ifBlank { "Habit name" },
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,
-                    color = colors.onBackground
-                )
-                Text(
-                    text = selectedFrequency.toDisplayString(),
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 13.sp,
-                    color = colors.onSurfaceVariant
-                )
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(
+                            color = Res.toColor(selectedColor),
+                            shape = RoundedCornerShape(16.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(Res.toResId(selectedIcon)),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+                Spacer(Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = habitName,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        color = colors.onBackground
+                    )
+                    Text(
+                        text = selectedFrequency.toDisplayString(),
+                        fontFamily = poppinsFontFamily,
+                        fontSize = 12.sp,
+                        color = colors.onSurfaceVariant
+                    )
+                }
             }
         }
 
@@ -251,5 +257,6 @@ fun AddHabit(
                 fontWeight = FontWeight.SemiBold
             )
         }
+        Spacer(Modifier.height(16.dp))
     }
 }
