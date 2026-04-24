@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
         NotificationHelper.createNotificationChannel(this)
 
         NotificationScheduler.scheduleDailyReminder(this)
+
         setContent {
             RequestNotificationPermission()
             HabitTheme {
