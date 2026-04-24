@@ -19,8 +19,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.habittracker.ui.theme.HabitTheme
-import com.example.habittracker.utils.NotificationHelper
-import com.example.habittracker.utils.NotificationScheduler
+import com.example.habittracker.core.notifications.NotificationHelper
+import com.example.habittracker.core.notifications.NotificationScheduler
 import com.example.habittracker.view.auth.SignInScreen
 import com.example.habittracker.view.auth.SignUpScreen
 import com.example.habittracker.view.main.UpdatePassword
@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
         NotificationHelper.createNotificationChannel(this)
 
         NotificationScheduler.scheduleDailyReminder(this)
+        NotificationScheduler.scheduleStreakRiskReminder(this)
 
         setContent {
             RequestNotificationPermission()

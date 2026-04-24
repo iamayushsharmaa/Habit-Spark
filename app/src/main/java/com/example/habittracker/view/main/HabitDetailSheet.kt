@@ -25,6 +25,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +50,8 @@ fun HabitDetailSheet(
     onCompleteClick: () -> Unit,
     habitViewModel: HabitsViewModel = hiltViewModel(),
 ) {
+    val haptic = LocalHapticFeedback.current
+
     val colors = MaterialTheme.colorScheme
     val currentStreak by habitViewModel.habitStreakFlow(habitId = habit.habitId).collectAsState()
     val longestStreak by habitViewModel.longestHabitStreakFlow(habitId = habit.habitId)
@@ -71,7 +75,10 @@ fun HabitDetailSheet(
                 .padding(16.dp)
         ) {
             IconButton(
-                onClick = onDeleteClick,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onDeleteClick()
+                },
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .size(36.dp)
@@ -229,7 +236,12 @@ fun HabitDetailSheet(
         Spacer(Modifier.height(16.dp))
 
         Button(
-            onClick = { if (!isLocked) onCompleteClick() },
+            onClick = {
+                if (!isLocked) {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onCompleteClick()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

@@ -3,6 +3,7 @@ package com.example.habittracker.view.main
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -18,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,9 +53,6 @@ import com.example.habittracker.view.main.component.PickColor
 import com.example.habittracker.view.main.component.SectionTitle
 import com.example.habittracker.view.navigation.BottomNavItem
 import com.example.habittracker.viewModel.HabitsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -67,7 +71,7 @@ fun AddHabit(
     var unit by remember { mutableStateOf("") }
     var value by remember { mutableStateOf("") }
 
-    val frequency = Frequency.values()
+    val frequency = Frequency.entries.toTypedArray()
     var expanded by remember { mutableStateOf(false) }
     var selectedFrequency by remember { mutableStateOf(Frequency.EVERYDAY) }
 
@@ -78,24 +82,19 @@ fun AddHabit(
         modifier = Modifier
             .fillMaxSize()
             .background(colors.background)
-            .padding(8.dp)
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Let's Start a new Habit",
-                color = colors.onBackground,
-                fontSize = 24.sp,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Bold,
-            )
-        }
+
+        Text(
+            text = "Let's Start a New Habit",
+            color = colors.onBackground,
+            fontSize = 28.sp,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+        )
 
         HabitTextField("Name", habitName) { habitName = it }
         HabitTextField("Description", description) { description = it }
@@ -146,56 +145,93 @@ fun AddHabit(
             }
         }
 
+        Spacer(Modifier.height(5.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .background(
+                        color = Res.toColor(selectedColor),
+                        shape = RoundedCornerShape(20.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(Res.toResId(selectedIcon)),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+            Spacer(Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = habitName.ifBlank { "Habit name" },
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                    color = colors.onBackground
+                )
+                Text(
+                    text = selectedFrequency.toDisplayString(),
+                    fontFamily = poppinsFontFamily,
+                    fontSize = 13.sp,
+                    color = colors.onSurfaceVariant
+                )
+            }
+        }
+
         Spacer(Modifier.height(8.dp))
 
         Button(
             onClick = {
-                if (habitName.isNotBlank()) {
-                    val habitRequest = HabitRequest(
-                        name = habitName,
-                        icon = selectedIcon,
-                        iconBackground = selectedColor,
-                        description = description,
-                        goal = Goal(value = value, unit = unit),
-                        frequency = selectedFrequency,
-                        startDate = LocalDate.now()
-                            .atStartOfDay(ZoneId.systemDefault())
-                            .toInstant()
-                            .toEpochMilli(),
-                        isActive = true
-                    )
+                when {
+                    habitName.isBlank() -> Toast.makeText(
+                        context,
+                        "Please enter a name",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                    CoroutineScope(Dispatchers.Main).launch {
-                        try {
-                            habitsViewModel.createHabit(habitRequest)
-                            Toast.makeText(
-                                context,
-                                "Your habit is ready to go!",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                    value.isBlank() -> Toast.makeText(
+                        context,
+                        "Please enter a goal value",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                            navController.navigate(BottomNavItem.Home.route) {
-                                popUpTo(BottomNavItem.AddHabit.route) {
-                                    inclusive = true
-                                }
+                    unit.isBlank() -> Toast.makeText(
+                        context,
+                        "Please enter a unit",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    else -> {
+                        val habitRequest = HabitRequest(
+                            name = habitName,
+                            icon = selectedIcon,
+                            iconBackground = selectedColor,
+                            description = description,
+                            goal = Goal(value = value, unit = unit),
+                            frequency = selectedFrequency,
+                            startDate = LocalDate.now()
+                                .atStartOfDay(ZoneId.systemDefault())
+                                .toInstant()
+                                .toEpochMilli(),
+                            isActive = true
+                        )
+
+                        habitsViewModel.createHabit(habitRequest)
+                        navController.navigate(BottomNavItem.Home.route) {
+                            popUpTo(BottomNavItem.AddHabit.route) {
+                                inclusive = true
                             }
-
-                            habitName = ""
-                            description = ""
-                            selectedIcon = "fitness"
-                            selectedColor = "#FFC107"
-                            selectedFrequency = Frequency.EVERYDAY
-
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Failed to create habit",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
                     }
-                } else {
-                    Toast.makeText(context, "Please enter a habit name", Toast.LENGTH_SHORT).show()
                 }
             },
             modifier = Modifier

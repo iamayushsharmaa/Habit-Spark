@@ -1,11 +1,12 @@
 package com.example.habittracker.view.main.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.DropdownMenuItem
@@ -13,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -50,7 +52,7 @@ fun DropdownField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp)
-                    .menuAnchor(),
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 shape = RoundedCornerShape(18.dp),
                 textStyle = TextStyle(
                     fontSize = 16.sp,
@@ -81,21 +83,29 @@ fun DropdownField(
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { onExpandChange(false) },
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .background(colors.surfaceVariant)
+                containerColor = colors.surfaceVariant,
             ) {
                 options.forEach { option ->
                     DropdownMenuItem(
                         text = {
                             Text(
                                 text = option,
+                                fontFamily = poppinsFontFamily,
+                                fontSize = 15.sp,
                                 color = colors.onSurface
                             )
                         },
-                        onClick = {
-                            onOptionSelected(option)
-                        }
+                        trailingIcon = {
+                            if (option == selectedValue) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = colors.onBackground,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        },
+                        onClick = { onOptionSelected(option) }
                     )
                 }
             }

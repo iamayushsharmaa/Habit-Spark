@@ -24,6 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,11 +38,12 @@ import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun WeekCalendarScreen(
+fun WeekCalendarStyle(
     modifier: Modifier = Modifier,
     viewModel: CalendarViewModel = hiltViewModel(),
     onDateClicked: (LocalDate) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     val colors = MaterialTheme.colorScheme
 
     val currentDate = viewModel.currentDate.collectAsState().value
@@ -71,13 +74,14 @@ fun WeekCalendarScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 weekData.weekDates.forEach { date ->
-                    CalendarStyle(
+                    CalendarCard(
                         modifier = Modifier.padding(5.dp),
                         day = date.format(DateTimeFormatter.ofPattern("EEE")),
                         date = date.dayOfMonth.toString(),
                         isCurrentDate = date == currentDate,
                         isSelectedDate = date == selectedDate,
                         onDateClicked = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             viewModel.onDateSelected(date)
                             onDateClicked(date)
                         }
@@ -89,7 +93,7 @@ fun WeekCalendarScreen(
 }
 
 @Composable
-fun CalendarStyle(
+fun CalendarCard(
     modifier: Modifier = Modifier,
     day: String,
     date: String,

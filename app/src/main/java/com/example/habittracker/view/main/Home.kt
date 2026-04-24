@@ -43,9 +43,11 @@ import com.example.habittracker.data.models.isCompletedOn
 import com.example.habittracker.ui.theme.poppinsFontFamily
 import com.example.habittracker.utils.getTodayTimestamp
 import com.example.habittracker.utils.toTimestamp
+import com.example.habittracker.view.main.component.EmptyHabitsState
 import com.example.habittracker.view.main.component.GlobalStreakBanner
 import com.example.habittracker.view.main.component.HabitStyle
 import com.example.habittracker.view.main.component.TrackerLayout
+import com.example.habittracker.view.navigation.BottomNavItem
 import com.example.habittracker.viewModel.HabitsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -168,7 +170,7 @@ fun Home(
         item { Spacer(Modifier.height(2.dp)) }
 
         item {
-            WeekCalendarScreen(
+            WeekCalendarStyle(
                 modifier = Modifier.padding(start = 4.dp),
                 onDateClicked = { localDate ->
                     habitViewModel.onDateSelected(localDate.toTimestamp())
@@ -212,13 +214,10 @@ fun Home(
 
             habits.isEmpty() -> {
                 item {
-                    Text(
-                        text = "Add new Habits",
-                        color = colors.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp)
+                    EmptyHabitsState(
+                        onAddClick = {
+                            navController.navigate(BottomNavItem.AddHabit.route)
+                        }
                     )
                 }
             }
