@@ -39,7 +39,6 @@ fun EmptyHabitsState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // ✅ SVG illustration using Canvas
         EmptyIllustration()
 
         Spacer(Modifier.height(24.dp))
@@ -64,27 +63,27 @@ fun EmptyHabitsState(
             textAlign = TextAlign.Center,
             lineHeight = 22.sp
         )
-
-        Spacer(Modifier.height(32.dp))
-
-        Button(
-            onClick = onAddClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colors.onBackground,
-                contentColor = colors.background
-            )
-        ) {
-            Text(
-                text = "+ Add your first habit",
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
-            )
-        }
+//
+//        Spacer(Modifier.height(32.dp))
+//
+//        Button(
+//            onClick = onAddClick,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(52.dp),
+//            shape = RoundedCornerShape(16.dp),
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = colors.onBackground,
+//                contentColor = colors.background
+//            )
+//        ) {
+//            Text(
+//                text = "+ Add your first habit",
+//                fontFamily = poppinsFontFamily,
+//                fontWeight = FontWeight.SemiBold,
+//                fontSize = 16.sp
+//            )
+//        }
     }
 }
 

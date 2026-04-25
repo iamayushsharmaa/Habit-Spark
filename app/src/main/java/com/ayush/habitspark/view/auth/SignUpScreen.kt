@@ -1,7 +1,6 @@
 package com.ayush.habitspark.view.auth
 
 
-//noinspection UsingMaterialAndMaterial3Libraries
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,16 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Scaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -40,7 +35,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,10 +42,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ayush.habitspark.common.ui_states.AuthState
 import com.ayush.habitspark.ui.theme.AppColor
+import com.ayush.habitspark.view.auth.component.AuthTextField
 import com.ayush.habitspark.view.auth.component.GoogleSignInButton
 import com.ayush.habitspark.view.navigation.Screen
 import com.ayush.habitspark.viewModel.AuthViewModel
-
 
 @Composable
 fun SignUpScreen(
@@ -60,32 +54,24 @@ fun SignUpScreen(
 ) {
     val state = viewModel.state
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-
     LaunchedEffect(state) {
         when (state) {
-            is AuthState.Success -> {
-                navController.navigate(Screen.Main.route) {
-                    popUpTo(Screen.SignUp.route) { inclusive = true }
-                }
+            is AuthState.Success -> navController.navigate(Screen.Main.route) {
+                popUpTo(Screen.SignUp.route) { inclusive = true }
             }
 
-            is AuthState.Error -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
-            }
-
+            is AuthState.Error -> Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
             else -> {}
         }
     }
 
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-
-    Scaffold(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(AppColor.White)
@@ -93,193 +79,120 @@ fun SignUpScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-                .padding(it)
-                .background(color = AppColor.White),
+                .padding(20.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
-
         ) {
             Text(
-                text = "Create a account",
-                modifier = Modifier.padding(horizontal = 20.dp),
-                fontSize = 40.sp,
+                text = "Create account.",
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                fontSize = 38.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Start,
             )
             Text(
-                text = "Please fill all the details to sign up.",
-                modifier = Modifier.padding(horizontal = 20.dp),
-                fontSize = 12.sp,
-                color = AppColor.Black,
+                text = "Fill in the details to get started.",
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                fontSize = 13.sp,
+                color = Color.Gray,
                 fontWeight = FontWeight.Medium,
             )
-            OutlinedTextField(
+
+            Spacer(Modifier.height(16.dp))
+
+            AuthTextField(
                 value = name,
-                onValueChange = {
-                    name = it
-                },
-                label = { Text(text = "Enter your name") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 15.dp, start = 20.dp, end = 20.dp),
-
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    }
-                ),
-                singleLine = true,
-                maxLines = 1,
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = AppColor.Black,
-                    unfocusedTextColor = AppColor.Black,
-                    focusedContainerColor = AppColor.WhiteFade,
-                    unfocusedContainerColor = AppColor.WhiteFade,
-                    focusedIndicatorColor = AppColor.Black,
-                    unfocusedIndicatorColor = AppColor.WhiteFade,
-                    focusedLabelColor = AppColor.BlackFade,
-                    unfocusedLabelColor = AppColor.BlackFade
-                )
+                onValueChange = { name = it },
+                label = "Full name",
+                onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
             )
-
-            OutlinedTextField(
+            AuthTextField(
                 value = email,
-                onValueChange = {
-                    email = it
-                },
-                label = { Text(text = "Enter your email") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 15.dp, start = 20.dp, end = 20.dp),
-
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    }
-                ),
-                singleLine = true,
-                maxLines = 1,
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = AppColor.Black,
-                    unfocusedTextColor = AppColor.Black,
-                    focusedContainerColor = AppColor.WhiteFade,
-                    unfocusedContainerColor = AppColor.WhiteFade,
-                    focusedIndicatorColor = AppColor.Black,
-                    unfocusedIndicatorColor = AppColor.WhiteFade,
-                    focusedLabelColor = AppColor.BlackFade,
-                    unfocusedLabelColor = AppColor.BlackFade
-                )
+                onValueChange = { email = it },
+                label = "Email",
+                onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
             )
-
-            OutlinedTextField(
+            AuthTextField(
                 value = password,
-                onValueChange = {
-                    password = it
-                },
-                label = { Text(text = "Password") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp, start = 20.dp, end = 20.dp),
-
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus()
-                    }
-                ),
-                singleLine = true,
-                maxLines = 1,
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = AppColor.Black,
-                    unfocusedTextColor = AppColor.Black,
-                    focusedContainerColor = AppColor.WhiteFade,
-                    unfocusedContainerColor = AppColor.WhiteFade,
-                    focusedIndicatorColor = AppColor.Black,
-                    unfocusedIndicatorColor = AppColor.WhiteFade,
-                    focusedLabelColor = AppColor.BlackFade,
-                    unfocusedLabelColor = AppColor.BlackFade
-                )
+                onValueChange = { password = it },
+                label = "Password",
+                imeAction = ImeAction.Done,
+                onImeAction = { focusManager.clearFocus() },
+                isPassword = true
             )
-            Spacer(Modifier.height(8.dp))
+
+            Spacer(Modifier.height(12.dp))
 
             Button(
-                onClick = {
-                    viewModel.signUp(name, email, password)
-                },
+                onClick = { viewModel.signUp(name, email, password) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(62.dp)
-                    .padding(top = 10.dp, start = 5.dp, end = 5.dp),
+                    .height(70.dp)
+                    .padding( vertical = 8.dp),
+                shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
                     contentColor = Color.White
                 )
             ) {
-                Text(text = "Sign up")
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-
-            val annotatedText = buildAnnotatedString {
-                append("Already have an account? ")
-
-                pushStringAnnotation(tag = "SIGN_IN", annotation = "sign_in")
-                withStyle(style = SpanStyle(color = Color(0xFF0538D1))) {
-                    append("Sign in!")
-                }
-                pop()
+                Text(
+                    text = "Sign up",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 7.dp),
+                    .padding(top = 12.dp),
                 contentAlignment = Alignment.Center
             ) {
-                ClickableText(
-                    text = annotatedText,
-                    onClick = { offset ->
-                        annotatedText.getStringAnnotations(
-                            tag = "SIGN_IN",
-                            start = offset,
-                            end = offset
+                val annotatedText = buildAnnotatedString {
+                    append("Already have an account? ")
+                    pushStringAnnotation(tag = "SIGN_IN", annotation = "sign_in")
+                    withStyle(
+                        SpanStyle(
+                            color = Color(0xFF0538D1),
+                            fontWeight = FontWeight.SemiBold
                         )
-                            .firstOrNull()?.let {
-                                navController.navigate(Screen.SignIn.route)
-                            }
+                    ) {
+                        append("Sign in")
                     }
-                )
+                    pop()
+                }
+                ClickableText(text = annotatedText, onClick = { offset ->
+                    annotatedText.getStringAnnotations("SIGN_IN", offset, offset)
+                        .firstOrNull()?.let { navController.navigate(Screen.SignIn.route) }
+                })
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(Modifier.height(20.dp))
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 HorizontalDivider(modifier = Modifier.weight(1f))
-                Text(
-                    text = "  OR  ",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
+                Text("  OR  ", fontSize = 12.sp, color = Color.Gray)
                 HorizontalDivider(modifier = Modifier.weight(1f))
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
             GoogleSignInButton(viewModel = viewModel)
+        }
+
+        if (state is AuthState.Loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color.White)
+            }
         }
     }
 }

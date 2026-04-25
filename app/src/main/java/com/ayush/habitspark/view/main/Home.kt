@@ -237,7 +237,7 @@ fun Home(
                 item {
                     EmptyHabitsState(
                         onAddClick = {
-                            navController.navigate(BottomNavItem.AddHabit.route)
+//                            navController.navigate(BottomNavItem.AddHabit.route)
                         }
                     )
                 }

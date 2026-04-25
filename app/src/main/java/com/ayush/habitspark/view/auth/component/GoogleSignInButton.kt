@@ -1,6 +1,7 @@
 package com.ayush.habitspark.view.auth.component
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -44,9 +45,16 @@ fun GoogleSignInButton(viewModel: AuthViewModel) {
             try {
                 val account = task.getResult(ApiException::class.java)
                 val idToken = account.idToken
-                if (idToken != null) viewModel.signInWithGoogle(idToken)
-            } catch (e: Exception) {
+                if (idToken != null) {
+                    viewModel.signInWithGoogle(idToken)
+                } else {
+                    Log.e("GoogleSignIn", "idToken is NULL") // ✅ add this
+                }
+            } catch (e: ApiException) {
+                Log.e("GoogleSignIn", "ApiException code: ${e.statusCode} — ${e.message}") // ✅ add this
             }
+        } else {
+            Log.e("GoogleSignIn", "Result not OK: ${result.resultCode}") // ✅ add this
         }
     }
     OutlinedButton(
