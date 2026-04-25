@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.habittracker"
+    namespace = "com.ayush.habitspark"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.habittracker"
+        applicationId = "com.ayush.habitspark"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
