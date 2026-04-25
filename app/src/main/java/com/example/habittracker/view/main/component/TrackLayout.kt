@@ -61,7 +61,7 @@ fun TrackerLayout(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 3.dp)
     ) {
         Text(
             text = "Your Activity",

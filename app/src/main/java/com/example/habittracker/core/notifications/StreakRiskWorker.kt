@@ -8,6 +8,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.habittracker.data.models.Resource
 import com.example.habittracker.data.models.isCompletedOn
+import com.example.habittracker.data.models.isScheduledFor
 import com.example.habittracker.data.repository.HabitsRepository
 import com.example.habittracker.utils.StreakUtils
 import com.example.habittracker.utils.getTodayTimestamp
@@ -45,11 +46,12 @@ class StreakRiskWorker @AssistedInject constructor(
                 streak > 0 && !completedToday
             }
 
-            val pendingCount = activeHabits.count { !it.isCompletedOn(today) }
+            val pendingCount =
+                activeHabits.count { it.isScheduledFor(today) && !it.isCompletedOn(today) }
+
             if (streakAtRisk && pendingCount > 0) {
                 NotificationHelper.showStreakRiskReminder(context, pendingCount)
             }
-
             Result.success()
         } catch (e: Exception) {
             Result.retry()

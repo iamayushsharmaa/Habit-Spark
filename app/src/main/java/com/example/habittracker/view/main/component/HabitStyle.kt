@@ -36,6 +36,7 @@ import com.example.habittracker.ui.theme.poppinsFontFamily
 
 @Composable
 fun HabitStyle(
+    modifier: Modifier = Modifier,
     habit: HabitResponse,
     isCompleted: Boolean,
     isLocked: Boolean,
@@ -45,9 +46,9 @@ fun HabitStyle(
     val colors = MaterialTheme.colorScheme
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 5.dp)
+            .padding(horizontal = 4.dp, vertical = 5.dp)
             .height(70.dp)
             .background(
                 shape = RoundedCornerShape(14.dp),

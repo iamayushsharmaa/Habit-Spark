@@ -48,7 +48,7 @@ fun GlobalStreakBanner(streak: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(backgroundColor)
             .padding(16.dp),

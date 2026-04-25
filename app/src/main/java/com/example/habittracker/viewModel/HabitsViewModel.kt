@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.habittracker.data.models.HabitRequest
 import com.example.habittracker.data.models.HabitResponse
 import com.example.habittracker.data.models.Resource
+import com.example.habittracker.data.models.isScheduledFor
 import com.example.habittracker.data.repository.HabitsRepository
 import com.example.habittracker.utils.StreakUtils
 import com.example.habittracker.utils.getTodayTimestamp
@@ -40,7 +41,7 @@ class HabitsViewModel @Inject constructor(
     val habitsForSelectedDates: StateFlow<List<HabitResponse>> =
         combine(_uiState, _selectedDate) { state, selected ->
             state.habits.filter {
-                it.startDate <= selected && it.isActive
+                it.startDate <= selected && it.isActive && it.isScheduledFor(selected)
             }
         }
             .stateIn(
@@ -48,7 +49,6 @@ class HabitsViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = emptyList()
             )
-
 
 
     val globalStreak: StateFlow<Int> = _uiState

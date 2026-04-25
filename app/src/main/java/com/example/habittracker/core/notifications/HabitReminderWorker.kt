@@ -8,6 +8,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.habittracker.data.models.Resource
 import com.example.habittracker.data.models.isCompletedOn
+import com.example.habittracker.data.models.isScheduledFor
 import com.example.habittracker.data.repository.HabitsRepository
 import com.example.habittracker.utils.getTodayTimestamp
 import dagger.assisted.Assisted
@@ -32,7 +33,8 @@ class HabitReminderWorker @AssistedInject constructor(
                     habitsResource.data.count { habit ->
                         habit.isActive &&
                                 habit.startDate <= today &&
-                                !habit.isCompletedOn(today)
+                                !habit.isCompletedOn(today) &&
+                                habit.isScheduledFor(today)
                     }
                 }
 

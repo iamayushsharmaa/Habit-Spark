@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -67,9 +68,14 @@ fun Home(
     val userName = FirebaseAuth.getInstance().currentUser?.displayName ?: "Hey there"
     val globalStreak by habitViewModel.globalStreak.collectAsState()
 
-    val habits by habitViewModel.habitsForSelectedDates.collectAsState()
-    val uiState by habitViewModel.uiState.collectAsState()
+    val habitsRaw by habitViewModel.habitsForSelectedDates.collectAsState()
     val selectedDate by habitViewModel.selectedDate.collectAsState()
+
+    val habits = remember(habitsRaw, selectedDate) {
+        habitsRaw.sortedWith(compareBy { it.isCompletedOn(selectedDate) })
+    }
+
+    val uiState by habitViewModel.uiState.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -146,13 +152,15 @@ fun Home(
     LazyColumn(
         modifier = Modifier
             .background(colors.background)
-            .fillMaxSize()
+            .fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = 3.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -236,12 +244,13 @@ fun Home(
             }
 
             else -> {
-                items(habits) { habit ->
+                items(habits, key = { it.habitId }) { habit ->
                     val streak by habitViewModel
                         .habitStreakFlow(habitId = habit.habitId)
                         .collectAsState()
 
                     HabitStyle(
+                        modifier = Modifier.animateItem(),
                         habit = habit,
                         isCompleted = habit.isCompletedOn(selectedDate),
                         isLocked = selectedDate < today,
